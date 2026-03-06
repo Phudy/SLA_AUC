@@ -709,66 +709,13 @@
   <!-- Flash Transition Element -->
   <div id="flashOverlay" class="flash-overlay"></div>
 
-  <!-- ================= AI COPILOT FAB & CHAT WINDOW ================= -->
-  <button id="aiFab" onclick="toggleChat()" class="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-tr from-pea-purple to-pea-purpleLight rounded-full flex items-center justify-center shadow-neon-purple text-white hover:scale-110 transition-transform duration-300 z-50 group">
-    <div class="absolute inset-0 rounded-full border-2 border-white/30 animate-ping opacity-20"></div>
-    <i data-lucide="bot" class="w-7 h-7 group-hover:animate-pulse"></i>
-  </button>
-
-  <div id="chatWindow" class="fixed bottom-24 right-6 w-[380px] h-[550px] max-w-[calc(100vw-3rem)] aero-glass rounded-3xl shadow-float flex flex-col overflow-hidden z-50 transition-all duration-300 transform scale-95 opacity-0 pointer-events-none origin-bottom-right">
-    <div class="bg-gradient-to-r from-pea-purple to-pea-purpleLight p-4 flex items-center justify-between text-white shadow-sm z-10">
-      <div class="flex items-center">
-        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm mr-3">
-          <i data-lucide="sparkles" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <h3 class="font-bold tracking-wide leading-tight">PEA Copilot <span class="text-[10px] bg-pea-gold text-pea-purple font-bold px-1.5 py-0.5 rounded ml-1">AI</span></h3>
-          <p class="text-xs text-purple-200">ผู้ช่วยวิเคราะห์ข้อมูลโครงการ</p>
-        </div>
-      </div>
-      <button onclick="toggleChat()" class="text-white/70 hover:text-white transition-colors">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
-    </div>
-
-    <div id="chatMessages" class="flex-grow p-4 overflow-y-auto bg-white/40 space-y-4 custom-scrollbar">
-      <div class="flex flex-col items-start chat-bubble-enter">
-        <div class="bg-white border border-gray-100 shadow-sm text-gray-700 text-sm rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%] leading-relaxed">
-          สวัสดีครับ! ผมคือ <b>PEA Data Copilot</b> ⚡<br><br>ผมสแกนฐานข้อมูลปัจจุบันเรียบร้อยแล้ว คุณสามารถสั่งงานผมได้เลย เช่น:<br>
-          <ul class="list-disc pl-4 mt-2 text-pea-purple font-medium">
-            <li>"สรุปภาพรวมโครงการให้หน่อย"</li>
-            <li>"มีงานไหนที่งบเกิน 50 ล้านบ้าง?"</li>
-            <li>"วิเคราะห์ความเสี่ยงงานที่ยังไม่ปิดให้ที"</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div id="typingIndicator" class="hidden px-4 pb-2 bg-transparent">
-      <div class="bg-white border border-gray-100 text-gray-500 rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[fit-content] shadow-sm flex items-center space-x-1.5">
-        <div class="w-1.5 h-1.5 bg-pea-purple/60 rounded-full animate-bounce"></div>
-        <div class="w-1.5 h-1.5 bg-pea-purple/60 rounded-full animate-bounce delay-100"></div>
-        <div class="w-1.5 h-1.5 bg-pea-purple/60 rounded-full animate-bounce delay-200"></div>
-      </div>
-    </div>
-
-    <div class="p-3 bg-white/80 backdrop-blur-md border-t border-gray-100">
-      <div class="relative flex items-center">
-        <input type="text" id="chatInput" placeholder="ถามข้อมูลโครงการกับ AI..." class="w-full bg-gray-100 border border-gray-200 rounded-full py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-pea-purple/20 focus:border-pea-purple text-gray-700 transition-all" onkeypress="handleChatKeyPress(event)">
-        <button onclick="sendChatMessage()" class="absolute right-2 w-8 h-8 bg-pea-purple text-white rounded-full flex items-center justify-center hover:bg-pea-purpleLight transition-colors shadow-sm">
-          <i data-lucide="send" class="w-4 h-4 ml-0.5"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
   <script>
     // ================= CONFIGURATION =================
     const SHEET_ID = '1B_RkrldeEulttY8o7Msg0zfqE9pyJC_F';
     const SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
     
-    // 🔴 API KEY
-    const apiKey = 'AIzaSyAL47Dg88_v83rT1vz1SGqQzEF-lKpPjzg'; 
+    // 🔴 API KEY (อัปเดตตามที่คุณแจ้งล่าสุด)
+    const apiKey = 'AIzaSyCOJcVQhunuusiWLlIzzomBrgRA0WNJYNI'; 
 
     // Constants
     const STATUS_COLORS = {
@@ -1349,7 +1296,8 @@
       if (!apiKey || apiKey.trim() === '') {
         throw new Error("API_KEY_MISSING");
       }
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+      // เปลี่ยนจากโมเดล Preview เป็นรุ่นมาตรฐานที่เสถียรสำหรับ Production
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
       const options = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
