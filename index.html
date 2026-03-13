@@ -126,8 +126,8 @@
     /* Custom Scrollbar Premium */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 20px; border: 2px solid transparent; background-clip: padding-box; }
-    ::-webkit-scrollbar-thumb:hover { background-color: #cbd5e1; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 20px; border: 2px solid transparent; background-clip: padding-box; }
+    ::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
@@ -162,14 +162,9 @@
     }
 
     /* Table Row Hover */
-    .table-row-premium { transition: all 0.3s ease; border-bottom: 1px solid rgba(226, 232, 240, 0.4); }
+    .table-row-premium { transition: all 0.2s ease; border-bottom: 1px solid rgba(226, 232, 240, 0.6); }
     .table-row-premium:hover {
-      background: white;
-      transform: scale(1.001) translateY(-1px);
-      box-shadow: 0 10px 20px -5px rgba(0,0,0,0.05);
-      border-radius: 8px;
-      z-index: 10;
-      position: relative;
+      background-color: rgba(248, 250, 252, 0.8) !important;
     }
     
     /* Highlight Selected Row */
@@ -201,14 +196,26 @@
 
     /* Sortable headers */
     th.sortable { cursor: pointer; user-select: none; }
-    th.sortable:hover { background-color: rgba(0,0,0,0.02); }
+    th.sortable:hover { background-color: rgba(0,0,0,0.05); }
     
     /* Custom Checkbox */
     .custom-checkbox {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       accent-color: #741b47;
       cursor: pointer;
+    }
+
+    /* Sticky Header Fix */
+    thead th {
+      position: sticky;
+      top: 0;
+      background-color: #f8fafc; /* Solid background to block scrolling rows */
+      z-index: 20;
+    }
+    .compact-cell {
+      padding: 0.5rem 0.3rem; /* Reduce padding to fit columns */
+      font-size: 10px; /* Small font size */
     }
   </style>
 </head>
@@ -252,8 +259,9 @@
             <i data-lucide="hexagon" class="w-5 h-5 text-white fill-white/20 relative z-10"></i>
           </div>
           <div>
+            <!-- เปลี่ยนชื่อระบบตรงนี้ตามต้องการ -->
             <h1 class="text-xl md:text-2xl font-display font-bold tracking-tight text-gray-800">
-              PEA <span class="font-light text-gray-500">| ระบบติดตามระยะเวลาปิดงาน</span>
+              PEA <span class="font-light text-gray-500">| ระบบติดตามระยะเวลาปิดงานก่อสร้าง</span>
             </h1>
           </div>
         </div>
@@ -264,16 +272,18 @@
             <span class="w-2 h-2 rounded-full bg-red-500 mr-2 animate-pulse"></span>
             แสดงข้อมูลจำลอง (Mock Data)
           </div>
+          <!-- ลบส่วนอัปเดตเวลาออกไปแล้ว -->
         </div>
       </div>
     </div>
   </header>
 
   <!-- ================= MAIN CONTENT ================= -->
-  <main id="mainContent" class="w-full px-4 sm:px-8 py-8 hidden flex-grow relative">
+  <!-- เปลี่ยน max-w ให้เป็น 100% เต็มจอเพื่อให้ตารางกว้างที่สุด -->
+  <main id="mainContent" class="w-full px-2 sm:px-6 py-6 hidden flex-grow relative">
     
     <!-- Segmented Controls -->
-    <div class="flex justify-center md:justify-start mb-10 opacity-0" id="tabContainer">
+    <div class="flex justify-center md:justify-start mb-6 opacity-0" id="tabContainer">
       <div class="tab-container inline-flex space-x-1 overflow-x-auto no-scrollbar">
         <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn tab-active px-6 md:px-8 py-2.5 text-sm flex items-center">
           <i data-lucide="layout-grid" class="w-4 h-4 mr-2"></i> ภาพรวมข้อมูล
@@ -428,183 +438,217 @@
     <!-- ================= 2. RAW DATABASE VIEW (ตารางฐานข้อมูล) ================= -->
     <div id="view-data" class="hidden opacity-0">
       
-      <div class="mb-6 flex flex-col xl:flex-row justify-between items-center gap-4 aero-glass p-4 rounded-2xl">
+      <div class="mb-4 flex flex-col xl:flex-row justify-between items-center gap-3 aero-glass p-3 rounded-2xl">
         <div class="flex items-center w-full xl:w-auto justify-between xl:justify-start">
-            <h2 class="text-xl font-bold text-gray-800 tracking-wide flex items-center pl-2 mr-6 whitespace-nowrap">
-            <i data-lucide="database" class="w-5 h-5 mr-3 text-pea-purple"></i>
+            <h2 class="text-lg font-bold text-gray-800 tracking-wide flex items-center pl-2 mr-4 whitespace-nowrap">
+            <i data-lucide="database" class="w-5 h-5 mr-2 text-pea-purple"></i>
             งานที่อยู่ระหว่างดำเนินการ
             </h2>
             
             <!-- Export Buttons (Desktop) -->
             <div class="hidden xl:flex gap-2">
-                <button onclick="exportExcel()" class="flex items-center px-3 py-2 bg-green-50 text-green-700 border border-green-200 rounded-xl hover:bg-green-100 hover:shadow-md transition-all text-sm font-semibold">
+                <button onclick="exportExcel()" class="flex items-center px-3 py-1.5 bg-green-50 text-green-700 border border-green-200 rounded-lg hover:bg-green-100 hover:shadow-sm transition-all text-xs font-semibold">
                     <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1.5"></i> Excel
                 </button>
-                <button onclick="exportPDF()" class="flex items-center px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-xl hover:bg-red-100 hover:shadow-md transition-all text-sm font-semibold">
+                <button onclick="exportPDF()" class="flex items-center px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-lg hover:bg-red-100 hover:shadow-sm transition-all text-xs font-semibold">
                     <i data-lucide="file-text" class="w-4 h-4 mr-1.5"></i> PDF
                 </button>
-                <button onclick="printTable()" class="flex items-center px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl hover:bg-blue-100 hover:shadow-md transition-all text-sm font-semibold">
+                <button onclick="printTable()" class="flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-100 hover:shadow-sm transition-all text-xs font-semibold">
                     <i data-lucide="printer" class="w-4 h-4 mr-1.5"></i> พิมพ์
                 </button>
             </div>
         </div>
 
-        <!-- Filters -->
-        <div class="flex flex-wrap gap-3 w-full xl:w-auto justify-end">
+        <!-- Filters (Compact) -->
+        <div class="flex flex-wrap gap-2 w-full xl:w-auto justify-end">
           
           <!-- Search -->
-          <div class="relative w-full sm:w-auto sm:flex-1 md:w-56 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm transition-all focus-within:ring-2 focus-within:ring-pea-purple/20 focus-within:border-pea-purple">
-              <div class="pl-3 text-gray-400 group-focus-within:text-pea-purple transition-colors">
-                <i data-lucide="search" class="w-4 h-4"></i>
+          <div class="relative w-full sm:w-auto sm:flex-1 md:w-48 group">
+            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+              <div class="pl-2 text-gray-400 group-focus-within:text-pea-purple transition-colors">
+                <i data-lucide="search" class="w-3.5 h-3.5"></i>
               </div>
-              <input type="text" id="searchInput" placeholder="ค้นหา รหัส, ชื่องาน..." class="w-full py-2.5 px-2 bg-transparent text-xs text-gray-800 placeholder-gray-400 focus:outline-none" onkeyup="applyFilters()"/>
+              <input type="text" id="searchInput" placeholder="ค้นหาข้อมูล..." class="w-full py-1.5 px-2 bg-transparent text-xs text-gray-800 placeholder-gray-400 focus:outline-none" onkeyup="applyFilters()"/>
+            </div>
+          </div>
+
+          <!-- New: Filter BA (Before SLA) -->
+          <div class="relative w-[48%] sm:w-auto md:w-32 group">
+            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+              <div class="pl-2 text-gray-400"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i></div>
+              <select id="filterBa" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+                <option value="ALL">กฟภ.: ทั้งหมด</option>
+              </select>
+              <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
             </div>
           </div>
           
-          <!-- Filter 1: SLA -->
-          <div class="relative w-[48%] sm:w-auto md:w-40 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden h-full shadow-sm transition-all focus-within:ring-2 focus-within:ring-pea-purple/20 focus-within:border-pea-purple">
-              <div class="pl-3 text-gray-400"><i data-lucide="clock" class="w-4 h-4"></i></div>
-              <select id="filterSelect" class="w-full py-2.5 px-2 bg-transparent text-xs text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+          <!-- Filter SLA -->
+          <div class="relative w-[48%] sm:w-auto md:w-32 group">
+            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+              <div class="pl-2 text-gray-400"><i data-lucide="clock" class="w-3.5 h-3.5"></i></div>
+              <select id="filterSelect" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
                 <option value="ALL">SLA ทั้งหมด</option>
               </select>
-              <div class="absolute right-2 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+              <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
             </div>
           </div>
 
-          <!-- Filter 2: Housing -->
-          <div class="relative w-[48%] sm:w-auto md:w-40 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden h-full shadow-sm transition-all focus-within:ring-2 focus-within:ring-pea-purple/20 focus-within:border-pea-purple">
-              <div class="pl-3 text-gray-400"><i data-lucide="home" class="w-4 h-4"></i></div>
-              <select id="filterHousing" class="w-full py-2.5 px-2 bg-transparent text-xs text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
-                <option value="ALL">งานจัดสรร: ทั้งหมด</option>
-                <option value="บ้านจัดสรร">เฉพาะงานจัดสรร</option>
-                <option value="ทั่วไป">งานทั่วไป (ไม่จัดสรร)</option>
+          <!-- New: Filter Alert (After SLA) -->
+          <div class="relative w-full sm:w-auto md:w-32 group">
+            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+              <div class="pl-2 text-gray-400"><i data-lucide="bell" class="w-3.5 h-3.5"></i></div>
+              <select id="filterAlert" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+                <option value="ALL">เตือน: ทั้งหมด</option>
+                <option value="ปกติ">ปกติ</option>
+                <option value="เกินกำหนด">เกินกำหนด</option>
               </select>
-              <div class="absolute right-2 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+              <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
             </div>
           </div>
 
-          <!-- Filter 3: Exception -->
-          <div class="relative w-full sm:w-auto md:w-40 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden h-full shadow-sm transition-all focus-within:ring-2 focus-within:ring-pea-purple/20 focus-within:border-pea-purple">
-              <div class="pl-3 text-gray-400"><i data-lucide="shield-alert" class="w-4 h-4"></i></div>
-              <select id="filterException" class="w-full py-2.5 px-2 bg-transparent text-xs text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
-                <option value="ALL">ข้อยกเว้น: ทั้งหมด</option>
-                <option value="ยกเว้น">เฉพาะงานยกเว้น</option>
-                <option value="ทั่วไป">งานทั่วไป (ไม่ยกเว้น)</option>
+          <!-- Filter Housing -->
+          <div class="relative w-[48%] sm:w-auto md:w-32 group">
+            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+              <div class="pl-2 text-gray-400"><i data-lucide="home" class="w-3.5 h-3.5"></i></div>
+              <select id="filterHousing" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+                <option value="ALL">จัดสรร: ทั้งหมด</option>
+                <option value="บ้านจัดสรร">เฉพาะจัดสรร</option>
+                <option value="ทั่วไป">ทั่วไป (ไม่จัดสรร)</option>
               </select>
-              <div class="absolute right-2 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+              <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
             </div>
           </div>
+
+          <!-- Filter Exception -->
+          <div class="relative w-[48%] sm:w-auto md:w-32 group">
+            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+              <div class="pl-2 text-gray-400"><i data-lucide="shield-alert" class="w-3.5 h-3.5"></i></div>
+              <select id="filterException" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+                <option value="ALL">ยกเว้น: ทั้งหมด</option>
+                <option value="ยกเว้น">เฉพาะยกเว้น</option>
+                <option value="ทั่วไป">ทั่วไป (ไม่ยกเว้น)</option>
+              </select>
+              <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+            </div>
+          </div>
+
+          <!-- ปุ่มล้างตัวกรอง (Reset Filters) เพิ่มเข้ามาใหม่ -->
+          <button onclick="resetFilters()" class="flex items-center justify-center w-full sm:w-auto px-3 py-1.5 bg-gray-100 text-gray-600 hover:text-pea-purple border border-gray-200 rounded-lg hover:bg-gray-200 text-[11px] font-semibold shadow-sm transition-all">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 mr-1"></i> ล้างตัวกรอง
+          </button>
 
         </div>
       </div>
 
-      <!-- Mobile Export Buttons (Visible only on small screens) -->
-      <div class="flex xl:hidden gap-2 mb-6 justify-center flex-wrap">
-          <button onclick="exportExcel()" class="flex-1 flex justify-center items-center px-3 py-2 bg-green-50 text-green-700 border border-green-200 rounded-xl hover:bg-green-100 text-sm font-semibold shadow-sm min-w-[100px]">
-              <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1.5"></i> Excel
+      <!-- Mobile Export Buttons -->
+      <div class="flex xl:hidden gap-2 mb-4 justify-center flex-wrap">
+          <button onclick="exportExcel()" class="flex-1 flex justify-center items-center px-3 py-1.5 bg-green-50 text-green-700 border border-green-200 rounded-lg hover:bg-green-100 text-xs font-semibold shadow-sm min-w-[80px]">
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 mr-1"></i> Excel
           </button>
-          <button onclick="exportPDF()" class="flex-1 flex justify-center items-center px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-xl hover:bg-red-100 text-sm font-semibold shadow-sm min-w-[100px]">
-              <i data-lucide="file-text" class="w-4 h-4 mr-1.5"></i> PDF
+          <button onclick="exportPDF()" class="flex-1 flex justify-center items-center px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-lg hover:bg-red-100 text-xs font-semibold shadow-sm min-w-[80px]">
+              <i data-lucide="file-text" class="w-3.5 h-3.5 mr-1"></i> PDF
           </button>
-          <button onclick="printTable()" class="flex-1 flex justify-center items-center px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl hover:bg-blue-100 text-sm font-semibold shadow-sm min-w-[100px]">
-              <i data-lucide="printer" class="w-4 h-4 mr-1.5"></i> พิมพ์
+          <button onclick="printTable()" class="flex-1 flex justify-center items-center px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-100 text-xs font-semibold shadow-sm min-w-[80px]">
+              <i data-lucide="printer" class="w-3.5 h-3.5 mr-1"></i> พิมพ์
           </button>
       </div>
 
       <!-- Selection Indicator -->
-      <div id="selectionIndicator" class="hidden mb-4 p-3 bg-pea-purple/10 border border-pea-purple/20 rounded-xl flex items-center justify-between">
-        <div class="text-sm font-medium text-pea-purple">
-          <i data-lucide="check-square" class="w-4 h-4 inline mr-1"></i> เลือกไว้ <span id="selectedCount">0</span> รายการ
+      <div id="selectionIndicator" class="hidden mb-3 p-2 px-4 bg-pea-purple/10 border border-pea-purple/20 rounded-lg flex items-center justify-between">
+        <div class="text-xs font-medium text-pea-purple">
+          <i data-lucide="check-square" class="w-3.5 h-3.5 inline mr-1"></i> เลือกไว้ <span id="selectedCount">0</span> รายการ
         </div>
         <div class="flex items-center gap-4">
-          <span class="text-xs text-gray-600">⚠️ คอลัมน์ "ปัญหาและอุปสรรค" จะบันทึกผ่านระบบ Apps Script อัตโนมัติเมื่อพิมพ์เสร็จ</span>
-          <button onclick="clearSelection()" class="text-xs font-semibold text-pea-purple hover:underline">ยกเลิกการเลือก</button>
+          <span class="text-[10px] text-gray-600 hidden sm:inline">⚠️ ส่งออกข้อมูลเฉพาะรายการที่เลือกเท่านั้น (หากไม่เลือกจะส่งออกทั้งหมด)</span>
+          <button onclick="clearSelection()" class="text-[10px] font-semibold text-pea-purple hover:underline">ยกเลิกการเลือก</button>
         </div>
       </div>
 
-      <div class="aero-glass rounded-[2rem] overflow-hidden shadow-soft flex flex-col">
-        <div class="overflow-x-auto custom-scrollbar flex-grow min-h-[50vh] pb-10"> 
-          <table class="min-w-full text-sm text-left border-collapse">
-            <thead class="sticky top-0 z-20">
-              <tr class="bg-white/90 backdrop-blur-xl border-b border-gray-200 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
-                <!-- Select All Checkbox -->
-                <th scope="col" class="px-2 py-3 text-center border-r border-gray-100">
+      <!-- Data Table Container (Fixed height for Sticky Header) -->
+      <div class="aero-glass rounded-xl overflow-hidden shadow-soft flex flex-col border border-gray-200">
+        <!-- Use overflow-y-auto and strict max-height to ensure sticky header works -->
+        <div class="overflow-x-auto overflow-y-auto custom-scrollbar flex-grow max-h-[60vh]"> 
+          <table class="w-full text-left border-collapse" style="table-layout: auto;">
+            <thead class="sticky top-0 z-20 bg-gray-100 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)]">
+              <tr>
+                <th scope="col" class="compact-cell text-center border-b border-gray-200">
                   <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAllPage()" class="custom-checkbox rounded border-gray-300">
                 </th>
-                <th scope="col" class="px-3 py-3 sortable" onclick="handleSort('ba')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
-                    การไฟฟ้า <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-ba"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('ba')">
+                  <div class="flex items-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors">
+                    กฟภ. <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-ba"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-2 py-3 sortable" onclick="handleSort('year')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
-                    ปี <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-year"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('year')">
+                  <div class="flex items-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors">
+                    ปี <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-year"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-3 sortable" onclick="handleSort('id')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
-                    หมายเลขงาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-id"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('id')">
+                  <div class="flex items-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors whitespace-nowrap">
+                    หมายเลขงาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-id"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-3 sortable min-w-[180px]" onclick="handleSort('subj')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
-                    ชื่องาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-subj"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200 w-48" onclick="handleSort('subj')">
+                  <div class="flex items-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors">
+                    ชื่องาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-subj"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-3 sortable min-w-[100px]" onclick="handleSort('foreman')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
-                    ช่างคุมงาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-foreman"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('foreman')">
+                  <div class="flex items-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors">
+                    ช่างคุมงาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-foreman"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-2 py-3 sortable" onclick="handleSort('sys')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
-                    สถานะ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-sys"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('sys')">
+                  <div class="flex items-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors whitespace-nowrap">
+                    ระบบ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-sys"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-3 sortable min-w-[100px]" onclick="handleSort('usr')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
-                    สถานะผู้ใช้ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-usr"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('usr')">
+                  <div class="flex items-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors">
+                    ผู้ใช้ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-usr"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-3 sortable" onclick="handleSort('est')">
-                  <div class="flex items-center justify-end font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
-                    ประมาณการ (฿) <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-est"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('est')">
+                  <div class="flex items-center justify-end font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors whitespace-nowrap">
+                    ประมาณการ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-est"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-3 sortable" onclick="handleSort('actual')">
-                  <div class="flex items-center justify-end font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
-                    มูลค่างาน (฿) <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-actual"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('actual')">
+                  <div class="flex items-center justify-end font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors whitespace-nowrap">
+                    มูลค่างาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-actual"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-2 py-3 sortable" onclick="handleSort('matPct')">
-                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
-                    %พัสดุ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-matPct"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('matPct')">
+                  <div class="flex items-center justify-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors">
+                    %พัสดุ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-matPct"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-2 py-3 sortable" onclick="handleSort('costPct')">
-                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
-                    %คชจ. <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-costPct"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('costPct')">
+                  <div class="flex items-center justify-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors">
+                    %คชจ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-costPct"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-3 sortable" onclick="handleSort('days')">
-                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
-                    จำนวนวัน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-days"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('days')">
+                  <div class="flex items-center justify-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors whitespace-nowrap">
+                    วัน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-days"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-2 py-3 sortable" onclick="handleSort('sla')">
-                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
-                    SLA <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-sla"></i>
+                <th scope="col" class="compact-cell sortable border-b border-gray-200" onclick="handleSort('sla')">
+                  <div class="flex items-center justify-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors">
+                    SLA <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-sla"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-3 font-bold text-gray-500 uppercase tracking-wide text-[11px] text-center border-l border-gray-200 bg-gray-50/50">
-                  แจ้งเตือน
+                <th scope="col" class="compact-cell sortable border-b border-gray-200 border-l" onclick="handleSort('isOverdue')">
+                  <div class="flex items-center justify-center font-bold text-gray-600 uppercase hover:text-pea-purple transition-colors">
+                    แจ้งเตือน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-isOverdue"></i>
+                  </div>
                 </th>
-                <th scope="col" class="px-5 py-3 font-bold text-pea-purple uppercase tracking-wide text-[11px] text-center border-l border-gray-200 bg-pea-purple/5 min-w-[200px]">
-                  ปัญหาและอุปสรรค (บันทึกอัตโนมัติ)
+                <th scope="col" class="compact-cell sortable border-b border-gray-200 border-l bg-pea-purple/5" onclick="handleSort('problem')">
+                  <div class="flex items-center justify-center font-bold text-pea-purple uppercase hover:text-pea-purpleLight transition-colors">
+                    ปัญหาและอุปสรรค <i data-lucide="arrow-up-down" class="w-3 h-3 ml-0.5 opacity-40 sort-icon" id="sort-icon-problem"></i>
+                  </div>
                 </th>
               </tr>
             </thead>
@@ -613,18 +657,18 @@
         </div>
         
         <!-- Table Pagination Footer -->
-        <div class="bg-gray-50/80 backdrop-blur-md p-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center text-xs gap-4 rounded-b-[2rem]">
+        <div class="bg-gray-50 p-3 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center text-xs gap-3 rounded-b-xl">
           <div class="text-gray-500 font-sans tracking-wide">
             แสดง <span id="startRange" class="font-bold text-gray-700">0</span> - <span id="endRange" class="font-bold text-gray-700">0</span> จาก <span id="dataCountText" class="text-pea-purple font-bold text-sm">0</span> รายการ
           </div>
           
           <div class="flex items-center space-x-2">
-              <button id="btnPrev" onclick="changePage(-1)" class="flex items-center px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-pea-purple disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm">
-                  <i data-lucide="chevron-left" class="w-4 h-4 mr-1"></i> ก่อนหน้า
+              <button id="btnPrev" onclick="changePage(-1)" class="flex items-center px-2 py-1 rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-pea-purple disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium transition-all shadow-sm">
+                  <i data-lucide="chevron-left" class="w-3.5 h-3.5 mr-0.5"></i> ก่อนหน้า
               </button>
-              <span id="pageInfo" class="text-sm text-gray-600 font-medium px-3 py-1.5 bg-gray-100 rounded-lg">หน้า 1 / 1</span>
-              <button id="btnNext" onclick="changePage(1)" class="flex items-center px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-pea-purple disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-all shadow-sm">
-                  ถัดไป <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+              <span id="pageInfo" class="text-[11px] text-gray-600 font-medium px-2 py-1 bg-gray-100 rounded">หน้า 1 / 1</span>
+              <button id="btnNext" onclick="changePage(1)" class="flex items-center px-2 py-1 rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-pea-purple disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium transition-all shadow-sm">
+                  ถัดไป <i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-0.5"></i>
               </button>
           </div>
         </div>
@@ -710,12 +754,9 @@
 
   <script>
     // ================= CONFIGURATION =================
-    // ใช้ Sheet ID ตัวใหม่
     const SHEET_ID = '1ft3cEGHEf6NQmxO9QrEhYQlg1dPm0DGkHgLacF0pAbI';
-    // เพิ่ม &sheet=Data เพื่อเจาะจงชื่อ Sheet
     const SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Data`;
 
-    // 🟢 นำ URL ของ Google Apps Script มาใส่ตรงนี้เพื่อให้ระบบบันทึกปัญหาได้
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzc_eAnKNEykyV_XQkUJteLTpc1AcdOSRTWi7ySZGuNQJfgVx2B4jQuUQk7hEEP7gS6/exec'; 
 
     const SLA_PERIODS = [
@@ -738,14 +779,6 @@
     let sortAsc = true;
     
     let selectedRows = new Set();
-
-    const filterSelect = document.getElementById('filterSelect');
-    SLA_PERIODS.forEach(period => {
-      const opt = document.createElement('option');
-      opt.value = period.value;
-      opt.textContent = `เฉพาะงาน SLA ${period.value} เดือน`;
-      filterSelect.appendChild(opt);
-    });
 
     Chart.defaults.font.family = "'Outfit', 'Prompt', sans-serif";
     Chart.defaults.color = '#94a3b8'; 
@@ -899,6 +932,10 @@
             const rawSys = safeStr(r.c[idxSys]);
             const cleanSys = rawSys !== '-' ? rawSys.trim().split(' ')[0].toUpperCase() : '-';
 
+            // คำนวณสถานะแจ้งเตือนไว้ล่วงหน้าเลยเพื่อให้ Sort ได้ง่าย
+            const parsedDays = parseInt(String(safeNum(r.c[idxDays])).replace(/,/g, ''));
+            const isOverdue = !isNaN(parsedDays) && parsedDays > (slaPeriod * 30);
+
             globalData.push({
                 idx: i, 
                 ba: safeStr(r.c[idxBa]),            
@@ -916,7 +953,18 @@
                 exceptionType: safeStr(r.c[idxException]),
                 days: safeNum(r.c[idxDays]),         
                 problem: safeStr(r.c[idxProblem]),      
-                sla: slaPeriod                  
+                sla: slaPeriod,
+                isOverdue: isOverdue ? 1 : 0 // 1 = เกินกำหนด, 0 = ปกติ
+            });
+        }
+
+        // อัปเดต Dropdown เลือก BA อัตโนมัติ
+        const uniqueBAs = [...new Set(globalData.map(item => item.ba))].filter(Boolean).sort();
+        const filterBa = document.getElementById('filterBa');
+        if (filterBa) {
+            filterBa.innerHTML = '<option value="ALL">กฟภ.: ทั้งหมด</option>';
+            uniqueBAs.forEach(ba => {
+                filterBa.innerHTML += `<option value="${ba}">${ba}</option>`;
             });
         }
 
@@ -936,6 +984,7 @@
         let s = slaOptions[Math.floor(Math.random() * slaOptions.length)];
         const sys = ['CRTD', 'REL', 'TECO', 'CLSD', 'CNFN'][Math.floor(Math.random() * 5)];
         const daysPassed = Math.floor(Math.random() * 800); 
+        const isOverdue = daysPassed > (s * 30);
         
         return {
           idx: i, 
@@ -954,13 +1003,31 @@
           exceptionType: Math.random() > 0.9 ? 'งานยกเว้น' : '',
           days: daysPassed.toString(),
           problem: '',
-          sla: s
+          sla: s,
+          isOverdue: isOverdue ? 1 : 0
         };
       });
+
+      const filterBa = document.getElementById('filterBa');
+      if (filterBa) {
+          filterBa.innerHTML = '<option value="ALL">กฟภ.: ทั้งหมด</option><option value="Z100">Z100</option>';
+      }
     }
 
     function boot() {
       lucide.createIcons();
+      
+      // สร้างตัวเลือก Dropdown SLA กลับคืนมา (ย้ายมาไว้ตรงนี้เพื่อรับประกันว่าโหลดติด 100%)
+      const filterSelect = document.getElementById('filterSelect');
+      if (filterSelect && filterSelect.options.length <= 1) {
+          SLA_PERIODS.forEach(period => {
+              const opt = document.createElement('option');
+              opt.value = period.value;
+              opt.textContent = `เฉพาะงาน SLA ${period.value} เดือน`;
+              filterSelect.appendChild(opt);
+          });
+      }
+
       startBootSequence(); 
       const s = document.createElement('script');
       s.src = SHEET_JSONP_URL;
@@ -1005,7 +1072,6 @@
         inputElement.disabled = true;
 
         try {
-            // ใช้ x-www-form-urlencoded เลี่ยงปัญหาการบล็อก CORS ของเบราว์เซอร์
             const formData = new URLSearchParams();
             formData.append('id', jobId);
             formData.append('problem', problemText);
@@ -1019,11 +1085,9 @@
                 body: formData
             });
             
-            // เมื่อไม่ Error ให้ถือว่ายิงข้อมูลไปสำเร็จ
             inputElement.style.backgroundColor = '#dcfce3'; // สีเขียวเมื่อสำเร็จ
             setTimeout(() => inputElement.style.backgroundColor = originalBg, 2000);
             
-            // อัปเดตข้อมูลในหน่วยความจำ
             const targetRow = globalData.find(d => d.id === jobId);
             if (targetRow) targetRow.problem = problemText;
             
@@ -1073,15 +1137,32 @@
 
     function applyFilters() {
       const q = document.getElementById('searchInput')?.value.toLowerCase() || '';
+      const fBa = document.getElementById('filterBa')?.value || 'ALL';
       const s = document.getElementById('filterSelect')?.value || 'ALL';
+      const fAlert = document.getElementById('filterAlert')?.value || 'ALL';
       const fHousing = document.getElementById('filterHousing')?.value || 'ALL';
       const fException = document.getElementById('filterException')?.value || 'ALL';
 
       const activeTabIsData = document.getElementById('view-data') && !document.getElementById('view-data').classList.contains('hidden');
 
       filteredData = globalData.filter(i => {
-        const mq = i.id.toLowerCase().includes(q) || i.ba.toLowerCase().includes(q) || (i.subj && i.subj.toLowerCase().includes(q));
-        const ms = s === 'ALL' || i.sla === parseInt(s);
+        // ค้นหาข้อความกว้างๆ ในหลายคอลัมน์
+        const mq = i.id.toLowerCase().includes(q) || 
+                   i.ba.toLowerCase().includes(q) || 
+                   i.sys.toLowerCase().includes(q) ||
+                   i.usr.toLowerCase().includes(q) ||
+                   i.foreman.toLowerCase().includes(q) ||
+                   (i.problem && i.problem.toLowerCase().includes(q)) ||
+                   (i.subj && i.subj.toLowerCase().includes(q));
+
+        const mBa = fBa === 'ALL' || i.ba === fBa;
+        // แก้ไขให้เปรียบเทียบข้อมูลได้แม่นยำขึ้น
+        const ms = (s === 'ALL') || (String(i.sla) === String(s));
+        
+        let mAlert = true;
+        if (fAlert === 'เกินกำหนด') mAlert = i.isOverdue === 1;
+        else if (fAlert === 'ปกติ') mAlert = i.isOverdue === 0;
+
         let mHousing = true;
         if (fHousing === 'บ้านจัดสรร') mHousing = i.housingType.includes('บ้านและที่ดินจัดสรร');
         else if (fHousing === 'ทั่วไป') mHousing = !i.housingType.includes('บ้านและที่ดินจัดสรร');
@@ -1095,7 +1176,7 @@
             isPending = i.sys.toUpperCase() !== 'CLSD';
         }
 
-        return mq && ms && mHousing && mException && isPending;
+        return mq && mBa && ms && mAlert && mHousing && mException && isPending;
       });
       
       currentPage = 1; 
@@ -1104,6 +1185,17 @@
       
       const dashView = document.getElementById('view-dashboard');
       if(dashView && !dashView.classList.contains('hidden')) renderVisuals();
+    }
+
+    // ฟังก์ชันเคลียร์ตัวกรองทั้งหมด
+    function resetFilters() {
+        if(document.getElementById('searchInput')) document.getElementById('searchInput').value = '';
+        if(document.getElementById('filterBa')) document.getElementById('filterBa').value = 'ALL';
+        if(document.getElementById('filterSelect')) document.getElementById('filterSelect').value = 'ALL';
+        if(document.getElementById('filterAlert')) document.getElementById('filterAlert').value = 'ALL';
+        if(document.getElementById('filterHousing')) document.getElementById('filterHousing').value = 'ALL';
+        if(document.getElementById('filterException')) document.getElementById('filterException').value = 'ALL';
+        applyFilters();
     }
 
     function handleSort(col) {
@@ -1115,7 +1207,7 @@
             if (col === 'est' || col === 'actual' || col === 'matPct' || col === 'costPct' || col === 'days') {
                 valA = parseFloat(String(valA).replace(/,/g, '').replace('%', '')) || 0;
                 valB = parseFloat(String(valB).replace(/,/g, '').replace('%', '')) || 0;
-            } else if (col === 'sla' || col === 'year') {
+            } else if (col === 'sla' || col === 'year' || col === 'isOverdue') {
                 valA = parseInt(valA) || 0;
                 valB = parseInt(valB) || 0;
             } else {
@@ -1175,60 +1267,54 @@
           const info = SLA_PERIODS.find(p => p.value === i.sla) || SLA_PERIODS[2];
           
           const isSelected = selectedRows.has(i.id);
-          const rowClass = isSelected ? 'row-selected' : 'hover:bg-gray-50';
+          const rowClass = isSelected ? 'row-selected' : '';
 
           const matNum = parseFloat(String(i.matPct).replace(/,/g, ''));
           const costNum = parseFloat(String(i.costPct).replace(/,/g, ''));
-          const matClass = (!isNaN(matNum) && matNum >= 80) ? 'text-emerald-600 font-bold' : 'text-gray-500';
-          const costClass = (!isNaN(costNum) && costNum >= 80) ? 'text-emerald-600 font-bold' : 'text-gray-500';
+          const matClass = (!isNaN(matNum) && matNum >= 80) ? 'text-emerald-600 font-bold' : 'text-gray-600';
+          const costClass = (!isNaN(costNum) && costNum >= 80) ? 'text-emerald-600 font-bold' : 'text-gray-600';
 
-          const parsedDays = parseInt(String(i.days).replace(/,/g, ''));
-          let alertHtml = '<span class="text-gray-400">-</span>';
-          
-          if (!isNaN(parsedDays)) {
-              const limitDays = i.sla * 30; 
-              if (parsedDays > limitDays) {
-                  alertHtml = `<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded-md border border-red-100 text-[10px] whitespace-nowrap"><i data-lucide="alert-circle" class="w-3 h-3 inline mb-0.5 mr-0.5"></i> เกิน ${i.sla} เดือนแล้ว</span>`;
-              } else {
-                  alertHtml = `<span class="text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 text-[10px] whitespace-nowrap"><i data-lucide="check-circle" class="w-3 h-3 inline mb-0.5 mr-0.5"></i> ปกติ</span>`;
-              }
+          let alertHtml = '';
+          if (i.isOverdue === 1) {
+              alertHtml = `<span class="text-red-600 font-bold bg-red-50 px-1.5 py-0.5 rounded border border-red-100 text-[9px] whitespace-nowrap"><i data-lucide="alert-circle" class="w-2.5 h-2.5 inline mb-0.5"></i> เกิน ${i.sla} ด.</span>`;
+          } else {
+              alertHtml = `<span class="text-emerald-600 font-medium bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 text-[9px] whitespace-nowrap"><i data-lucide="check-circle" class="w-2.5 h-2.5 inline mb-0.5"></i> ปกติ</span>`;
           }
 
-          // HTML ของ Input ปัญหาและอุปสรรค 
           const problemInputHtml = `
             <input type="text" 
                    value="${i.problem === '-' ? '' : i.problem}" 
                    onblur="saveProblem('${i.id}', this.value, this)"
                    placeholder="ระบุปัญหา..."
-                   class="w-full px-2 py-1.5 text-xs text-gray-700 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pea-purple transition-colors">
+                   class="w-full min-w-[80px] px-1 py-1 text-[10px] text-gray-700 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pea-purple transition-colors">
           `;
 
           html += `
-            <tr class="table-row-premium transition-colors ${rowClass}">
-              <td class="px-2 py-3 whitespace-nowrap text-center border-r border-gray-100">
+            <tr class="table-row-premium ${rowClass}">
+              <td class="compact-cell text-center border-r border-gray-100">
                 <input type="checkbox" class="custom-checkbox rounded border-gray-300" ${isSelected ? 'checked' : ''} onclick="toggleSelection('${i.id}')">
               </td>
-              <td class="px-3 py-3 whitespace-nowrap font-display text-[11px] text-gray-500">${i.ba}</td>
-              <td class="px-2 py-3 whitespace-nowrap text-center font-display text-[11px] text-gray-500">${i.year}</td>
-              <td class="px-3 py-3 whitespace-nowrap font-display font-bold text-gray-800 tracking-wide text-[11px]">${i.id}</td>
-              <td class="px-3 py-3 min-w-[180px] leading-snug text-gray-700 font-medium text-[12px]">${i.subj}</td>
-              <td class="px-3 py-3 min-w-[100px] text-gray-600 font-medium text-[11px] leading-snug">${i.foreman}</td>
-              <td class="px-2 py-3 whitespace-nowrap text-[11px] font-bold text-gray-700">${i.sys}</td>
-              <td class="px-3 py-3 min-w-[100px] text-[11px] text-gray-500 leading-snug">${i.usr}</td>
-              <td class="px-3 py-3 whitespace-nowrap text-right font-display text-[11px] text-gray-700">${i.est}</td>
-              <td class="px-3 py-3 whitespace-nowrap text-right font-display text-[11px] text-gray-700">${i.actual}</td>
-              <td class="px-2 py-3 whitespace-nowrap text-center font-display text-[11px] ${matClass}">${i.matPct}</td>
-              <td class="px-2 py-3 whitespace-nowrap text-center font-display text-[11px] ${costClass}">${i.costPct}</td>
-              <td class="px-3 py-3 whitespace-nowrap text-center font-display text-[11px] font-bold text-gray-700">${i.days}</td>
-              <td class="px-2 py-3 whitespace-nowrap text-center">
-                <span class="px-1.5 py-0.5 inline-flex items-center text-[10px] font-bold rounded" style="background-color: ${info.color}15; color: ${info.color};">
-                  ${i.sla} ด.
+              <td class="compact-cell text-gray-600">${i.ba}</td>
+              <td class="compact-cell text-center text-gray-600">${i.year}</td>
+              <td class="compact-cell font-bold text-gray-800 whitespace-nowrap">${i.id}</td>
+              <td class="compact-cell w-48 break-words text-gray-700 leading-tight">${i.subj}</td>
+              <td class="compact-cell text-gray-600 leading-tight">${i.foreman}</td>
+              <td class="compact-cell font-bold text-gray-700 whitespace-nowrap">${i.sys}</td>
+              <td class="compact-cell text-gray-600 leading-tight">${i.usr}</td>
+              <td class="compact-cell text-right text-gray-700 whitespace-nowrap">${i.est}</td>
+              <td class="compact-cell text-right text-gray-700 whitespace-nowrap">${i.actual}</td>
+              <td class="compact-cell text-center ${matClass}">${i.matPct}</td>
+              <td class="compact-cell text-center ${costClass}">${i.costPct}</td>
+              <td class="compact-cell text-center font-bold text-gray-700">${i.days}</td>
+              <td class="compact-cell text-center">
+                <span class="px-1 py-0.5 inline-flex items-center text-[9px] font-bold rounded" style="background-color: ${info.color}15; color: ${info.color};">
+                  ${i.sla}
                 </span>
               </td>
-              <td class="px-3 py-3 whitespace-nowrap text-center border-l border-gray-100 bg-gray-50/30">
+              <td class="compact-cell text-center border-l border-gray-100 bg-gray-50/30">
                 ${alertHtml}
               </td>
-              <td class="px-3 py-3 border-l border-gray-100 bg-pea-purple/5">
+              <td class="compact-cell border-l border-gray-100 bg-pea-purple/5">
                 ${problemInputHtml}
               </td>
             </tr>
@@ -1258,11 +1344,12 @@
         if (dataToExport.length === 0) { alert("ไม่มีข้อมูลสำหรับส่งออก"); return; }
         
         const exportData = dataToExport.map(i => ({
-            "การไฟฟ้า": i.ba, "ปี": i.year, "หมายเลขงาน": i.id, "ชื่องาน": i.subj,
+            "กฟภ.": i.ba, "ปี": i.year, "หมายเลขงาน": i.id, "ชื่องาน": i.subj,
             "ช่างคุมงาน": i.foreman, "สถานะระบบ": i.sys, "สถานะผู้ใช้": i.usr,
-            "มูลค่าประมาณการ (฿)": i.est, "มูลค่างานจริง (฿)": i.actual,
+            "ประมาณการ (฿)": i.est, "มูลค่างานจริง (฿)": i.actual,
             "% พัสดุ": i.matPct, "% ค่าใช้จ่าย": i.costPct, "จำนวนวัน": i.days,
             "SLA (เดือน)": i.sla,
+            "แจ้งเตือน": i.isOverdue === 1 ? `เกิน ${i.sla} เดือน` : 'ปกติ',
             "ปัญหาและอุปสรรค": i.problem === '-' ? '' : i.problem
         }));
         const worksheet = XLSX.utils.json_to_sheet(exportData);
@@ -1276,18 +1363,27 @@
         if (dataToExport.length === 0) { alert("ไม่มีข้อมูลสำหรับพิมพ์"); return; }
         
         const printWindow = window.open('', '_blank');
-        let htmlTableRows = dataToExport.map(i => `
+        let htmlTableRows = dataToExport.map(i => {
+            let alertText = i.isOverdue === 1 ? `<span style="color:red;font-weight:bold;">เกิน ${i.sla} ด.</span>` : 'ปกติ';
+            return `
             <tr>
-                <td style="border: 1px solid #ddd; padding: 4px;">${i.ba}</td>
-                <td style="border: 1px solid #ddd; padding: 4px; font-weight: bold;">${i.id}</td>
-                <td style="border: 1px solid #ddd; padding: 4px;">${i.subj}</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: right;">${i.est}</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.costPct}</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.days}</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.sla}</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: left; color: #741b47;">${i.problem === '-' ? '' : i.problem}</td>
+                <td>${i.ba}</td>
+                <td>${i.year}</td>
+                <td style="font-weight: bold;">${i.id}</td>
+                <td style="text-align: left;">${i.subj}</td>
+                <td>${i.foreman}</td>
+                <td>${i.sys}</td>
+                <td>${i.usr}</td>
+                <td style="text-align: right;">${i.est}</td>
+                <td style="text-align: right;">${i.actual}</td>
+                <td>${i.matPct}</td>
+                <td>${i.costPct}</td>
+                <td>${i.days}</td>
+                <td>${i.sla}</td>
+                <td>${alertText}</td>
+                <td style="text-align: left; color: #741b47;">${i.problem === '-' ? '' : i.problem}</td>
             </tr>
-        `).join('');
+        `});
 
         printWindow.document.write(`
             <html>
@@ -1295,12 +1391,13 @@
                 <title>PEA SLA Report</title>
                 <style>
                     @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap');
-                    body { font-family: 'Sarabun', sans-serif; padding: 20px; color: #000; }
-                    .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; border-bottom: 2px solid #741b47; padding-bottom: 10px; }
-                    .header h2 { color: #741b47; margin: 0; font-size: 18px; }
-                    .header p { margin: 0; font-size: 12px; color: #555; }
-                    table { width: 100%; border-collapse: collapse; font-size: 11px; }
-                    th { background-color: #f3f4f6; color: #000; border: 1px solid #ddd; padding: 6px; text-align: center; }
+                    body { font-family: 'Sarabun', sans-serif; padding: 10px; color: #000; }
+                    .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; border-bottom: 2px solid #741b47; padding-bottom: 5px; }
+                    .header h2 { color: #741b47; margin: 0; font-size: 16px; }
+                    .header p { margin: 0; font-size: 10px; color: #555; }
+                    table { width: 100%; border-collapse: collapse; font-size: 8px; table-layout: auto; }
+                    th { background-color: #f3f4f6; color: #000; border: 1px solid #ddd; padding: 4px; text-align: center; }
+                    td { border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top; }
                     @media print { 
                         @page { size: landscape; margin: 10mm; } 
                         body { padding: 0; }
@@ -1309,19 +1406,19 @@
             </head>
             <body>
                 <div class="header">
-                    <h2>รายงานระบบติดตามระยะเวลาปิดงานโครงการ (งานที่อยู่ระหว่างดำเนินการ)</h2>
+                    <h2>รายงานระบบติดตามระยะเวลาปิดงานก่อสร้าง (งานที่อยู่ระหว่างดำเนินการ)</h2>
                     <p>ข้อมูล ณ วันที่: ${new Date().toLocaleString('th-TH')} | จำนวน: ${dataToExport.length} รายการ</p>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <th>กฟภ.</th><th>หมายเลขงาน</th><th style="text-align: left;">ชื่องาน</th>
-                            <th style="text-align: right;">ประมาณการ (฿)</th>
-                            <th>% คชจ.</th><th>จำนวนวัน</th><th>SLA (เดือน)</th>
-                            <th style="text-align: left; width: 25%;">ปัญหาและอุปสรรค</th>
+                            <th>กฟภ.</th><th>ปี</th><th>หมายเลขงาน</th><th style="text-align: left; width: 15%;">ชื่องาน</th>
+                            <th>ช่างคุมงาน</th><th>ระบบ</th><th>ผู้ใช้</th><th style="text-align: right;">ประมาณการ</th>
+                            <th style="text-align: right;">มูลค่างาน</th><th>% พัสดุ</th><th>% คชจ.</th>
+                            <th>วัน</th><th>SLA</th><th>แจ้งเตือน</th><th style="text-align: left; width: 15%;">ปัญหาและอุปสรรค</th>
                         </tr>
                     </thead>
-                    <tbody>${htmlTableRows}</tbody>
+                    <tbody>${htmlTableRows.join('')}</tbody>
                 </table>
                 <script>
                     window.onload = function() { 
@@ -1423,8 +1520,7 @@
       SLA_PERIODS.forEach(p => overdueCounts[p.value] = 0);
 
       filteredData.forEach(d => {
-         const parsedDays = parseInt(String(d.days).replace(/,/g, ''));
-         if (d.sys.toUpperCase() !== 'CLSD' && !isNaN(parsedDays) && parsedDays > (d.sla * 30)) {
+         if (d.sys.toUpperCase() !== 'CLSD' && d.isOverdue === 1) {
              if (overdueCounts[d.sla] !== undefined) overdueCounts[d.sla]++;
          }
       });
