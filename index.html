@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PEA SLA Tracking Dashboard - Pinnacle AI</title>
+  <title>PEA SLA Tracking Dashboard - Pinnacle Light</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -29,8 +29,6 @@
             'aero': '0 20px 40px -15px rgba(0,0,0,0.05)',
             'aero-hover': '0 30px 60px -15px rgba(116, 27, 71, 0.12)',
             'float': '0 10px 30px -10px rgba(0,0,0,0.08)',
-            'neon-purple': '0 0 20px rgba(116, 27, 71, 0.3)',
-            'inner-glow': 'inset 0 0 20px rgba(255,255,255,0.5)',
           },
           animation: {
             'mesh-1': 'mesh1 15s ease-in-out infinite alternate',
@@ -38,7 +36,6 @@
             'mesh-3': 'mesh3 18s ease-in-out infinite alternate',
             'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
             'shimmer': 'shimmer 2.5s infinite linear',
-            'bounce-slow': 'bounce 3s infinite',
           },
           keyframes: {
             mesh1: {
@@ -78,9 +75,6 @@
 
   <!-- SheetJS (สำหรับ Export Excel) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-  <!-- Markdown Parser for AI Chat -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <style>
     body {
@@ -167,6 +161,7 @@
       background: rgba(255, 255, 255, 0.4);
     }
 
+    /* Table Row Hover */
     .table-row-premium { transition: all 0.3s ease; border-bottom: 1px solid rgba(226, 232, 240, 0.4); }
     .table-row-premium:hover {
       background: white;
@@ -175,6 +170,12 @@
       border-radius: 8px;
       z-index: 10;
       position: relative;
+    }
+    
+    /* Highlight Selected Row */
+    .row-selected {
+      background-color: rgba(116, 27, 71, 0.05) !important;
+      border-left: 3px solid #741b47;
     }
 
     .shimmer-effect::before {
@@ -198,34 +199,17 @@
       transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* AI Chat Markdown Styles */
-    .ai-markdown p { margin-bottom: 0.5rem; line-height: 1.6; }
-    .ai-markdown ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
-    .ai-markdown ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.5rem; }
-    .ai-markdown strong { color: #741b47; font-weight: 600; }
-    .ai-markdown li { margin-bottom: 0.25rem; }
-    .ai-markdown h3 { font-weight: 700; color: #1e293b; margin-top: 1rem; margin-bottom: 0.5rem; }
-    
-    .chat-bubble-enter { animation: fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-    
-    /* Text Gradients */
-    .text-gradient-ai {
-      background: linear-gradient(135deg, #741b47, #b347e6, #f59e0b);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* Modal Backdrop */
-    .modal-backdrop {
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-
     /* Sortable headers */
     th.sortable { cursor: pointer; user-select: none; }
     th.sortable:hover { background-color: rgba(0,0,0,0.02); }
+    
+    /* Custom Checkbox */
+    .custom-checkbox {
+      width: 16px;
+      height: 16px;
+      accent-color: #741b47;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans relative">
@@ -250,7 +234,7 @@
       <h2 class="text-5xl font-display font-light tracking-[0.15em] text-gray-800 mb-2 transform translate-y-0 transition-transform duration-1000" id="introLogo">PEA<span class="font-bold text-pea-purple">.</span>SLA</h2>
     </div>
     <div class="h-6 overflow-hidden mt-4">
-      <p id="loadingStatus" class="text-gray-400 tracking-widest text-xs uppercase font-medium transform translate-y-0 transition-transform duration-700">กำลังเชื่อมต่อระบบอัจฉริยะ...</p>
+      <p id="loadingStatus" class="text-gray-400 tracking-widest text-xs uppercase font-medium transform translate-y-0 transition-transform duration-700">กำลังดึงข้อมูลจากระบบ...</p>
     </div>
     <div class="w-64 h-px bg-gray-100 mt-8 overflow-hidden">
       <div id="loadingProgress" class="h-full bg-pea-purple w-0 transition-all duration-300 ease-out"></div>
@@ -269,7 +253,7 @@
           </div>
           <div>
             <h1 class="text-xl md:text-2xl font-display font-bold tracking-tight text-gray-800">
-              PEA <span class="font-light text-gray-500">| AI Dashboard</span>
+              PEA <span class="font-light text-gray-500">| ระบบติดตามระยะเวลาปิดงาน</span>
             </h1>
           </div>
         </div>
@@ -282,12 +266,11 @@
           </div>
           <div class="hidden sm:flex items-center space-x-3 text-right">
             <div class="flex flex-col text-left">
-              <span class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">สถานะระบบ AI</span>
-              <span class="text-xs font-bold text-pea-purple" id="lastUpdateTime">เชื่อมต่อแล้ว</span>
+              <span class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">อัปเดตล่าสุด</span>
+              <span class="text-xs font-bold text-gray-700" id="lastUpdateTime">--:--</span>
             </div>
-            <div class="w-8 h-8 rounded-full bg-pea-purple/10 flex items-center justify-center border border-pea-purple/20 text-pea-purple relative">
-              <div class="absolute inset-0 rounded-full border border-pea-purple/30 animate-ping opacity-50"></div>
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100 text-emerald-500">
+              <i data-lucide="check" class="w-4 h-4"></i>
             </div>
           </div>
         </div>
@@ -315,31 +298,11 @@
 
     <!-- ================= 1. VISUAL ANALYTICS VIEW ================= -->
     <div id="view-dashboard" class="space-y-8 block">
-      
-      <!-- AI Executive Insight Card -->
-      <div class="aero-glass rounded-[2rem] p-8 relative overflow-hidden group shadow-inner-glow border border-pea-purple/10">
-        <div class="absolute right-0 top-0 w-64 h-64 bg-pea-gold/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
-        <div class="relative z-10">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold flex items-center tracking-wide text-gradient-ai">
-              <i data-lucide="sparkles" class="w-5 h-5 mr-2 text-pea-purple"></i>
-              AI Executive Insights
-            </h3>
-            <button onclick="generateExecutiveSummary()" id="btnGenerateSummary" class="px-4 py-2 bg-gradient-to-r from-pea-purple to-pea-purpleLight text-white text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-pea-purple/30 transition-all flex items-center">
-              <i data-lucide="wand-2" class="w-4 h-4 mr-2"></i> วิเคราะห์ภาพรวม
-            </button>
-          </div>
-          
-          <div id="aiSummaryBox" class="bg-white/50 rounded-xl p-5 border border-white/80 min-h-[80px] flex items-center">
-            <p class="text-gray-500 font-light text-sm italic">คลิกปุ่ม "วิเคราะห์ภาพรวม" เพื่อให้ AI สรุปข้อมูลโครงการทั้งหมดแบบ Real-time...</p>
-          </div>
-        </div>
-      </div>
 
       <!-- KPIs -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <div class="aero-glass rounded-[2rem] p-8 hover-aero relative overflow-hidden group">
+        <div class="aero-glass rounded-[2rem] p-8 hover-aero relative overflow-hidden group opacity-0 animate-fade-in-up">
           <div class="shimmer-effect"></div>
           <div class="absolute -right-10 -top-10 w-40 h-40 bg-pea-purple/5 blur-3xl rounded-full group-hover:bg-pea-purple/10 transition-colors"></div>
           <div class="relative z-10 flex justify-between items-start">
@@ -353,7 +316,7 @@
           </div>
         </div>
 
-        <div class="aero-glass rounded-[2rem] p-8 hover-aero relative overflow-hidden group">
+        <div class="aero-glass rounded-[2rem] p-8 hover-aero relative overflow-hidden group opacity-0 animate-fade-in-up delay-100">
           <div class="shimmer-effect"></div>
           <div class="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/5 blur-3xl rounded-full group-hover:bg-emerald-500/10 transition-colors"></div>
           <div class="relative z-10 flex justify-between items-start">
@@ -370,7 +333,7 @@
           </div>
         </div>
 
-        <div class="aero-glass rounded-[2rem] p-8 hover-aero relative overflow-hidden group">
+        <div class="aero-glass rounded-[2rem] p-8 hover-aero relative overflow-hidden group opacity-0 animate-fade-in-up delay-200">
           <div class="shimmer-effect"></div>
           <div class="absolute -right-10 -top-10 w-40 h-40 bg-pea-gold/5 blur-3xl rounded-full group-hover:bg-pea-gold/10 transition-colors"></div>
           <div class="relative z-10 flex justify-between items-start">
@@ -388,7 +351,7 @@
       <!-- Charts Section -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        <div class="aero-glass rounded-[2rem] p-8 hover-aero flex flex-col">
+        <div class="aero-glass rounded-[2rem] p-8 hover-aero flex flex-col opacity-0 animate-fade-in-up delay-100">
           <div class="flex justify-between items-center mb-8">
             <h3 class="text-lg font-bold text-gray-800 flex items-center tracking-wide">
               <div class="w-8 h-8 rounded-full bg-pea-purple/10 flex items-center justify-center mr-3 text-pea-purple">
@@ -402,7 +365,7 @@
           </div>
         </div>
 
-        <div class="aero-glass rounded-[2rem] p-8 hover-aero flex flex-col">
+        <div class="aero-glass rounded-[2rem] p-8 hover-aero flex flex-col opacity-0 animate-fade-in-up delay-200">
           <div class="flex justify-between items-center mb-6">
             <h3 class="text-lg font-bold text-gray-800 flex items-center tracking-wide">
               <div class="w-8 h-8 rounded-full bg-pea-gold/10 flex items-center justify-center mr-3 text-pea-goldDark">
@@ -425,7 +388,7 @@
           </div>
         </div>
 
-        <div class="aero-glass rounded-[2rem] p-8 hover-aero flex flex-col">
+        <div class="aero-glass rounded-[2rem] p-8 hover-aero flex flex-col opacity-0 animate-fade-in-up delay-300">
           <div class="flex justify-between items-center mb-8">
             <h3 class="text-lg font-bold text-gray-800 flex items-center tracking-wide">
               <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3 text-blue-600">
@@ -439,7 +402,7 @@
           </div>
         </div>
 
-        <div class="aero-glass rounded-[2rem] p-8 hover-aero flex flex-col">
+        <div class="aero-glass rounded-[2rem] p-8 hover-aero flex flex-col opacity-0 animate-fade-in-up delay-300">
           <div class="flex justify-between items-center mb-8">
             <h3 class="text-lg font-bold text-gray-800 flex items-center tracking-wide">
               <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center mr-3 text-emerald-600">
@@ -452,6 +415,21 @@
             <canvas id="baSlaChart"></canvas>
           </div>
         </div>
+        
+        <!-- NEW: Overdue Projects Chart -->
+        <div class="aero-glass rounded-[2rem] p-8 hover-aero flex flex-col opacity-0 animate-fade-in-up delay-300 col-span-1 lg:col-span-2">
+          <div class="flex justify-between items-center mb-8">
+            <h3 class="text-lg font-bold text-red-600 flex items-center tracking-wide">
+              <div class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center mr-3 text-red-600">
+                <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+              </div>
+              สรุปงานที่ล่าช้าเกินกำหนด SLA (Overdue)
+            </h3>
+          </div>
+          <div class="flex-grow relative w-full min-h-[340px]">
+            <canvas id="overdueChart"></canvas>
+          </div>
+        </div>
 
       </div>
     </div>
@@ -459,115 +437,177 @@
     <!-- ================= 2. RAW DATABASE VIEW (ตารางฐานข้อมูล) ================= -->
     <div id="view-data" class="hidden opacity-0">
       
-      <div class="mb-8 flex flex-col lg:flex-row justify-between items-center gap-4 aero-glass p-4 rounded-2xl">
-        <div class="flex items-center">
-            <h2 class="text-xl font-bold text-gray-800 tracking-wide flex items-center pl-2 mr-6">
+      <div class="mb-6 flex flex-col xl:flex-row justify-between items-center gap-4 aero-glass p-4 rounded-2xl">
+        <div class="flex items-center w-full xl:w-auto justify-between xl:justify-start">
+            <h2 class="text-xl font-bold text-gray-800 tracking-wide flex items-center pl-2 mr-6 whitespace-nowrap">
             <i data-lucide="database" class="w-5 h-5 mr-3 text-pea-purple"></i>
             งานที่อยู่ระหว่างดำเนินการ
             </h2>
             
-            <!-- Export Buttons -->
-            <div class="hidden md:flex gap-2">
+            <!-- Export Buttons (Desktop) -->
+            <div class="hidden xl:flex gap-2">
                 <button onclick="exportExcel()" class="flex items-center px-3 py-2 bg-green-50 text-green-700 border border-green-200 rounded-xl hover:bg-green-100 hover:shadow-md transition-all text-sm font-semibold">
-                    <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1.5"></i> ดาวน์โหลด Excel
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1.5"></i> Excel
                 </button>
                 <button onclick="exportPDF()" class="flex items-center px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-xl hover:bg-red-100 hover:shadow-md transition-all text-sm font-semibold">
-                    <i data-lucide="file-text" class="w-4 h-4 mr-1.5"></i> บันทึก PDF (Print)
+                    <i data-lucide="file-text" class="w-4 h-4 mr-1.5"></i> PDF
+                </button>
+                <button onclick="printTable()" class="flex items-center px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl hover:bg-blue-100 hover:shadow-md transition-all text-sm font-semibold">
+                    <i data-lucide="printer" class="w-4 h-4 mr-1.5"></i> พิมพ์
                 </button>
             </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-          <div class="relative w-full sm:w-80 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm transition-all group-focus-within:ring-2 group-focus-within:ring-pea-purple/20 group-focus-within:border-pea-purple">
-              <div class="pl-4 text-gray-400 group-focus-within:text-pea-purple transition-colors">
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-3 w-full xl:w-auto justify-end">
+          
+          <!-- Search -->
+          <div class="relative w-full sm:w-auto sm:flex-1 md:w-56 group">
+            <div class="relative flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm transition-all focus-within:ring-2 focus-within:ring-pea-purple/20 focus-within:border-pea-purple">
+              <div class="pl-3 text-gray-400 group-focus-within:text-pea-purple transition-colors">
                 <i data-lucide="search" class="w-4 h-4"></i>
               </div>
-              <input type="text" id="searchInput" placeholder="ค้นหา BA, หมายเลขงาน..." class="w-full py-2.5 px-3 bg-transparent text-sm text-gray-800 placeholder-gray-400 focus:outline-none" onkeyup="applyFilters()"/>
+              <input type="text" id="searchInput" placeholder="ค้นหา รหัส, ชื่องาน..." class="w-full py-2.5 px-2 bg-transparent text-xs text-gray-800 placeholder-gray-400 focus:outline-none" onkeyup="applyFilters()"/>
             </div>
           </div>
-          <div class="relative w-full sm:w-56 group">
+          
+          <!-- Filter 1: SLA -->
+          <div class="relative w-[48%] sm:w-auto md:w-40 group">
             <div class="relative flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden h-full shadow-sm transition-all focus-within:ring-2 focus-within:ring-pea-purple/20 focus-within:border-pea-purple">
-              <div class="pl-4 text-gray-400"><i data-lucide="filter" class="w-4 h-4"></i></div>
-              <select id="filterSelect" class="w-full py-2.5 px-3 bg-transparent text-sm text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
-                <option value="ALL">ระยะเวลา SLA ทั้งหมด</option>
+              <div class="pl-3 text-gray-400"><i data-lucide="clock" class="w-4 h-4"></i></div>
+              <select id="filterSelect" class="w-full py-2.5 px-2 bg-transparent text-xs text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+                <option value="ALL">SLA ทั้งหมด</option>
               </select>
-              <div class="absolute right-3 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-4 h-4"></i></div>
+              <div class="absolute right-2 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
             </div>
           </div>
+
+          <!-- Filter 2: Housing -->
+          <div class="relative w-[48%] sm:w-auto md:w-40 group">
+            <div class="relative flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden h-full shadow-sm transition-all focus-within:ring-2 focus-within:ring-pea-purple/20 focus-within:border-pea-purple">
+              <div class="pl-3 text-gray-400"><i data-lucide="home" class="w-4 h-4"></i></div>
+              <select id="filterHousing" class="w-full py-2.5 px-2 bg-transparent text-xs text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+                <option value="ALL">งานจัดสรร: ทั้งหมด</option>
+                <option value="บ้านจัดสรร">เฉพาะงานจัดสรร</option>
+                <option value="ทั่วไป">งานทั่วไป (ไม่จัดสรร)</option>
+              </select>
+              <div class="absolute right-2 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+            </div>
+          </div>
+
+          <!-- Filter 3: Exception -->
+          <div class="relative w-full sm:w-auto md:w-40 group">
+            <div class="relative flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden h-full shadow-sm transition-all focus-within:ring-2 focus-within:ring-pea-purple/20 focus-within:border-pea-purple">
+              <div class="pl-3 text-gray-400"><i data-lucide="shield-alert" class="w-4 h-4"></i></div>
+              <select id="filterException" class="w-full py-2.5 px-2 bg-transparent text-xs text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+                <option value="ALL">ข้อยกเว้น: ทั้งหมด</option>
+                <option value="ยกเว้น">เฉพาะงานยกเว้น</option>
+                <option value="ทั่วไป">งานทั่วไป (ไม่ยกเว้น)</option>
+              </select>
+              <div class="absolute right-2 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+            </div>
+          </div>
+
         </div>
       </div>
 
       <!-- Mobile Export Buttons (Visible only on small screens) -->
-      <div class="flex md:hidden gap-2 mb-6 justify-center">
-          <button onclick="exportExcel()" class="flex-1 flex justify-center items-center px-3 py-2 bg-green-50 text-green-700 border border-green-200 rounded-xl hover:bg-green-100 text-sm font-semibold">
+      <div class="flex xl:hidden gap-2 mb-6 justify-center flex-wrap">
+          <button onclick="exportExcel()" class="flex-1 flex justify-center items-center px-3 py-2 bg-green-50 text-green-700 border border-green-200 rounded-xl hover:bg-green-100 text-sm font-semibold shadow-sm min-w-[100px]">
               <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1.5"></i> Excel
           </button>
-          <button onclick="exportPDF()" class="flex-1 flex justify-center items-center px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-xl hover:bg-red-100 text-sm font-semibold">
+          <button onclick="exportPDF()" class="flex-1 flex justify-center items-center px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-xl hover:bg-red-100 text-sm font-semibold shadow-sm min-w-[100px]">
               <i data-lucide="file-text" class="w-4 h-4 mr-1.5"></i> PDF
+          </button>
+          <button onclick="printTable()" class="flex-1 flex justify-center items-center px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl hover:bg-blue-100 text-sm font-semibold shadow-sm min-w-[100px]">
+              <i data-lucide="printer" class="w-4 h-4 mr-1.5"></i> พิมพ์
           </button>
       </div>
 
+      <!-- Selection Indicator -->
+      <div id="selectionIndicator" class="hidden mb-4 p-3 bg-pea-purple/10 border border-pea-purple/20 rounded-xl flex items-center justify-between">
+        <div class="text-sm font-medium text-pea-purple">
+          <i data-lucide="check-square" class="w-4 h-4 inline mr-1"></i> เลือกไว้ <span id="selectedCount">0</span> รายการ
+        </div>
+        <button onclick="clearSelection()" class="text-xs font-semibold text-pea-purple hover:underline">ยกเลิกการเลือก</button>
+      </div>
+
       <div class="aero-glass rounded-[2rem] overflow-hidden shadow-soft flex flex-col">
-        <div class="overflow-x-auto custom-scrollbar flex-grow min-h-[50vh] pb-20"> 
+        <div class="overflow-x-auto custom-scrollbar flex-grow min-h-[50vh] pb-10"> 
           <table class="min-w-full text-sm text-left border-collapse">
             <thead class="sticky top-0 z-20">
               <tr class="bg-white/90 backdrop-blur-xl border-b border-gray-200 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
-                <th scope="col" class="px-6 py-5 sortable" onclick="handleSort('ba')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[12px] hover:text-pea-purple transition-colors">
-                    BA <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1.5 opacity-40 sort-icon" id="sort-icon-ba"></i>
+                <!-- Select All Checkbox -->
+                <th scope="col" class="px-4 py-4 text-center border-r border-gray-100">
+                  <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAllPage()" class="custom-checkbox rounded border-gray-300">
+                </th>
+                <th scope="col" class="px-5 py-4 sortable" onclick="handleSort('ba')">
+                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
+                    การไฟฟ้า <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-ba"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-6 py-5 sortable" onclick="handleSort('id')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[12px] hover:text-pea-purple transition-colors">
-                    หมายเลขงาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1.5 opacity-40 sort-icon" id="sort-icon-id"></i>
+                <th scope="col" class="px-3 py-4 sortable" onclick="handleSort('year')">
+                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
+                    ปี <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-year"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-6 py-5 sortable min-w-[250px]" onclick="handleSort('subj')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[12px] hover:text-pea-purple transition-colors">
-                    ชื่องาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1.5 opacity-40 sort-icon" id="sort-icon-subj"></i>
+                <th scope="col" class="px-4 py-4 sortable" onclick="handleSort('id')">
+                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
+                    หมายเลขงาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-id"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-5 sortable" onclick="handleSort('sys')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[12px] hover:text-pea-purple transition-colors">
-                    สถานะระบบ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1.5 opacity-40 sort-icon" id="sort-icon-sys"></i>
+                <th scope="col" class="px-5 py-4 sortable min-w-[200px]" onclick="handleSort('subj')">
+                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
+                    ชื่องาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-subj"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-5 sortable min-w-[140px]" onclick="handleSort('usr')">
-                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[12px] hover:text-pea-purple transition-colors">
-                    สถานะผู้ใช้ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1.5 opacity-40 sort-icon" id="sort-icon-usr"></i>
+                <th scope="col" class="px-4 py-4 sortable min-w-[120px]" onclick="handleSort('foreman')">
+                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
+                    ช่างคุมงาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-foreman"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-5 sortable" onclick="handleSort('est')">
-                  <div class="flex items-center justify-end font-bold text-gray-500 uppercase tracking-wide text-[12px] hover:text-pea-purple transition-colors">
-                    รวมประมาณการ (฿) <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1.5 opacity-40 sort-icon" id="sort-icon-est"></i>
+                <th scope="col" class="px-3 py-4 sortable" onclick="handleSort('sys')">
+                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
+                    สถานะ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-sys"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-5 sortable" onclick="handleSort('actual')">
-                  <div class="flex items-center justify-end font-bold text-gray-500 uppercase tracking-wide text-[12px] hover:text-pea-purple transition-colors">
-                    รวมค่าใช้จ่ายจริง (฿) <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1.5 opacity-40 sort-icon" id="sort-icon-actual"></i>
+                <th scope="col" class="px-4 py-4 sortable min-w-[120px]" onclick="handleSort('usr')">
+                  <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
+                    สถานะผู้ใช้ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-usr"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-5 sortable" onclick="handleSort('matPct')">
-                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[12px] hover:text-pea-purple transition-colors">
-                    % พัสดุ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1.5 opacity-40 sort-icon" id="sort-icon-matPct"></i>
+                <th scope="col" class="px-4 py-4 sortable" onclick="handleSort('est')">
+                  <div class="flex items-center justify-end font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
+                    ประมาณการ (฿) <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-est"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-5 sortable" onclick="handleSort('costPct')">
-                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[12px] hover:text-pea-purple transition-colors">
-                    % ค่าใช้จ่าย <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1.5 opacity-40 sort-icon" id="sort-icon-costPct"></i>
+                <th scope="col" class="px-4 py-4 sortable" onclick="handleSort('actual')">
+                  <div class="flex items-center justify-end font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
+                    มูลค่างาน (฿) <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-actual"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-5 sortable" onclick="handleSort('sla')">
-                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[12px] hover:text-pea-purple transition-colors">
-                    SLA <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1.5 opacity-40 sort-icon" id="sort-icon-sla"></i>
+                <th scope="col" class="px-3 py-4 sortable" onclick="handleSort('matPct')">
+                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
+                    %พัสดุ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-matPct"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-6 py-5 font-bold text-pea-purple uppercase tracking-wide text-[12px] min-w-[160px] bg-pea-purple/5">
-                  🧠 AI วิเคราะห์ความเสี่ยง
+                <th scope="col" class="px-3 py-4 sortable" onclick="handleSort('costPct')">
+                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
+                    %คชจ. <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-costPct"></i>
+                  </div>
                 </th>
-                <th scope="col" class="px-6 py-5 font-bold text-gray-500 uppercase tracking-wide text-[12px] text-center">
-                  AI Action
+                <th scope="col" class="px-4 py-4 sortable" onclick="handleSort('days')">
+                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
+                    จำนวนวัน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-days"></i>
+                  </div>
+                </th>
+                <th scope="col" class="px-3 py-4 sortable" onclick="handleSort('sla')">
+                  <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
+                    SLA <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-sla"></i>
+                  </div>
+                </th>
+                <th scope="col" class="px-5 py-4 font-bold text-gray-500 uppercase tracking-wide text-[11px] text-center border-l border-gray-200 bg-gray-50/50">
+                  แจ้งเตือน
                 </th>
               </tr>
             </thead>
@@ -668,54 +708,15 @@
 
   </main>
 
-  <!-- ================= AI ACTION PLAN MODAL ================= -->
-  <div id="aiModal" class="fixed inset-0 z-[200] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-    <div class="modal-backdrop absolute inset-0" onclick="closeAiModal()"></div>
-    <div class="relative bg-white w-[90%] max-w-2xl rounded-[2rem] shadow-2xl flex flex-col max-h-[85vh] transform scale-95 transition-transform duration-300" id="aiModalContent">
-      <!-- Header -->
-      <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-pea-purple/5 to-transparent rounded-t-[2rem]">
-        <div class="flex items-center">
-          <div class="w-10 h-10 rounded-full bg-pea-purple/10 flex items-center justify-center mr-3 text-pea-purple">
-            <i data-lucide="sparkles" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <h3 class="font-bold text-gray-800 text-lg">AI Action Plan</h3>
-            <p class="text-xs text-gray-500 font-mono" id="modalWbsId">WBS-XXXX</p>
-          </div>
-        </div>
-        <button onclick="closeAiModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-      <!-- Body -->
-      <div class="p-6 overflow-y-auto custom-scrollbar flex-grow bg-gray-50/30" id="modalBody">
-        <div id="modalLoading" class="flex flex-col items-center justify-center py-10 text-pea-purple">
-          <i data-lucide="loader-2" class="w-10 h-10 animate-spin mb-4"></i>
-          <p class="text-sm font-medium animate-pulse">AI กำลังวิเคราะห์ข้อมูลและสร้างแผนการดำเนินการ...</p>
-        </div>
-        <div id="modalResult" class="ai-markdown text-gray-700 text-[15px] hidden">
-          <!-- Markdown injected here -->
-        </div>
-      </div>
-      <!-- Footer -->
-      <div class="p-4 border-t border-gray-100 flex justify-end bg-white rounded-b-[2rem]">
-        <button onclick="closeAiModal()" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition-colors">
-          ปิดหน้าต่าง
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- Flash Transition Element -->
   <div id="flashOverlay" class="flash-overlay"></div>
 
   <script>
     // ================= CONFIGURATION =================
-    const SHEET_ID = '1B_RkrldeEulttY8o7Msg0zfqE9pyJC_F';
-    const SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-    
-    // 🔴 API KEY (อัปเดตตามที่คุณแจ้งล่าสุด)
-    const apiKey = 'AIzaSyCOJcVQhunuusiWLlIzzomBrgRA0WNJYNI'; 
+    // ใช้ Sheet ID ตัวใหม่
+    const SHEET_ID = '1bIaK5yHfm3owGnjVlzujg-6LivHWJPDj';
+    // เพิ่ม &sheet=Data เพื่อเจาะจงชื่อ Sheet
+    const SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Data`;
 
     // Constants
     const STATUS_COLORS = {
@@ -740,13 +741,15 @@
     let globalData = [];
     let filteredData = [];
     let charts = {};
-    let isChatOpen = false;
     
     // Pagination & Sorting State
     let currentPage = 1;
     const rowsPerPage = 20;
     let sortCol = null;
     let sortAsc = true;
+    
+    // Selection State
+    let selectedRows = new Set();
 
     // Init Dropdown
     const filterSelect = document.getElementById('filterSelect');
@@ -809,30 +812,6 @@
       document.getElementById('lastUpdateTime').innerText = new Date().toLocaleTimeString('th-TH', {hour12:false}) + ' น.';
     };
 
-    // AI Rule-based Risk Calculation
-    function calculateSmartRisk(item) {
-      const sys = item.sys.toUpperCase();
-      const pctCost = parseFloat(item.costPct) || 0;
-      
-      // Anomaly: 
-      if (pctCost > 100 || (item.usr.includes('ปิด') && sys !== 'CLSD' && sys !== 'TECO')) {
-        return { label: 'Anomaly (พบข้อขัดแย้ง)', color: 'bg-purple-100 text-purple-700 ring-purple-300', icon: 'alert-octagon' };
-      }
-      // High Risk: Budget heavily spent but status is just created/released
-      if (pctCost > 80 && (sys === 'CRTD' || sys === 'REL')) {
-        return { label: 'High Risk (เสี่ยงสูง)', color: 'bg-red-100 text-red-700 ring-red-300', icon: 'trending-down' };
-      }
-      // Medium Risk: Fast SLA but still not closed and spending > 50%
-      if (item.sla <= 9 && sys !== 'CLSD' && sys !== 'TECO' && pctCost > 50) {
-        return { label: 'Monitor (เฝ้าระวัง)', color: 'bg-yellow-100 text-yellow-700 ring-yellow-300', icon: 'alert-triangle' };
-      }
-      // Normal
-      if (sys === 'CLSD' || sys === 'TECO') {
-        return { label: 'Completed (ปกติ)', color: 'bg-emerald-50 text-emerald-600 ring-emerald-200', icon: 'check-circle' };
-      }
-      return { label: 'On Track (ปกติ)', color: 'bg-gray-50 text-gray-500 ring-gray-200', icon: 'shield-check' };
-    }
-
     function animateCounter(id, end) {
       const el = document.getElementById(id);
       if(!el) return;
@@ -854,7 +833,7 @@
     function startBootSequence() {
       const pBar = document.getElementById('loadingProgress');
       const status = document.getElementById('loadingStatus');
-      const messages = ["กำลังเชื่อมต่อฐานข้อมูล...", "วิเคราะห์โครงสร้างด้วย AI...", "สร้างการแสดงผล..."];
+      const messages = ["กำลังเชื่อมต่อฐานข้อมูล...", "กำลังวิเคราะห์โครงสร้างข้อมูล...", "กำลังสร้างตารางและกราฟ..."];
       let mIdx = 0;
       setInterval(()=>{ if(mIdx < messages.length) { status.innerText = messages[mIdx]; mIdx++; } }, 600);
       bootInterval = setInterval(() => {
@@ -888,12 +867,32 @@
     window.processData = function(res) {
       try {
         if (res.status === 'error') throw new Error(res.errors[0].message);
-        globalData = res.table.rows.map((r, i) => ({
-          idx: i, ba: safeStr(r.c[0]), id: safeStr(r.c[1]), subj: safeStr(r.c[2]),            
-          sys: safeStr(r.c[3]), usr: safeStr(r.c[4]), actual: safeNum(r.c[29]),        
-          est: safeNum(r.c[41]), matPct: safePct(r.c[42]), costPct: safePct(r.c[43]),      
-          sla: determineSla(r.c[41]?.v || r.c[41]?.f || 0)
-        })).filter(item => item.id !== '-' && item.ba !== '-');
+        
+        globalData = res.table.rows.map((r, i) => {
+          // ดึงค่า Estimate (Col J = Index 9) เพื่อใช้คิด SLA
+          const estValue = safeNum(r.c[9]);
+          const slaPeriod = determineSla(estValue);
+
+          return {
+            idx: i, 
+            ba: safeStr(r.c[1]),            // Col B : การไฟฟ้า
+            year: safeStr(r.c[2]),          // Col C : ปี
+            id: safeStr(r.c[3]),            // Col D : หมายเลขงาน
+            subj: safeStr(r.c[4]),          // Col E : ชื่องาน
+            sys: safeStr(r.c[5]),           // Col F : สถานะระบบ
+            usr: safeStr(r.c[6]),           // Col G : สถานะผู้ใช้
+            actual: safeNum(r.c[7]),        // Col H : มูลค่างาน
+            est: estValue,                  // Col J : มูลค่าประมาณการ
+            matPct: safePct(r.c[10]),       // Col K : %พัสดุ
+            costPct: safePct(r.c[11]),      // Col L : %คชจ.
+            housingType: safeStr(r.c[12]),  // Col M : งานบ้านและที่ดินจัดสรร
+            foreman: safeStr(r.c[13]),      // Col N : ช่างคุมงาน
+            exceptionType: safeStr(r.c[16]),// Col Q : งานยกเว้น
+            days: safeNum(r.c[23]),         // Col X : จำนวนวันค่าใช้จ่ายเข้าครั้งแรก
+            sla: slaPeriod                  // คำนวณ SLA จาก est
+          };
+        }).filter(item => item.id !== '-' && item.id !== '' && item.ba !== '-');
+
         if(!globalData.length) throw new Error("Empty Data");
       } catch (err) {
         console.warn("Live DB fail. Using simulation.", err);
@@ -906,19 +905,29 @@
     };
 
     function buildSimData() {
-      globalData = Array.from({ length: 247 }).map((_, i) => {
+      globalData = Array.from({ length: 150 }).map((_, i) => {
         const slaOptions = [6, 9, 12, 15, 18, 21, 24];
-        const weights = [0.05, 0.1, 0.4, 0.25, 0.1, 0.05, 0.05]; 
-        let r = Math.random(), s = 24, c = 0;
-        for(let j=0; j<weights.length; j++) { c += weights[j]; if (r < c) { s = slaOptions[j]; break; } }
+        let s = slaOptions[Math.floor(Math.random() * slaOptions.length)];
         const sys = ['CRTD', 'REL', 'TECO', 'CLSD', 'CNFN'][Math.floor(Math.random() * 5)];
+        const daysPassed = Math.floor(Math.random() * 800); // สุ่มวัน
+        
         return {
-          idx: i, ba: `Z${Math.floor(Math.random() * 900) + 100}`, id: `WBS-${new Date().getFullYear()}-${String(i + 1).padStart(4, '0')}`,
-          subj: `โครงการปรับปรุงระบบจำหน่ายไฟฟ้าแรงสูง-แรงต่ำ พื้นที่เขต ${Math.floor(Math.random() * 12) + 1}`,
-          sys: sys, usr: sys === 'CLSD' ? 'ปิดงานแล้ว' : 'อยู่ระหว่างดำเนินการ',
-          est: (Math.random() * 50000000).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits:2}),
-          actual: (Math.random() * 45000000).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits:2}),
-          matPct: Math.floor(Math.random() * 100) + '%', costPct: Math.floor(Math.random() * 100) + '%', sla: s
+          idx: i, 
+          ba: `Z${Math.floor(Math.random() * 900) + 100}`, 
+          year: '2024',
+          id: `WBS-2024-${String(i + 1).padStart(4, '0')}`,
+          subj: `โครงการจำลองระบบจำหน่าย พื้นที่ ${Math.floor(Math.random() * 12) + 1}`,
+          sys: sys, 
+          usr: sys === 'CLSD' ? 'ปิดงานแล้ว' : 'อยู่ระหว่างดำเนินการ',
+          actual: (Math.random() * 45000000).toLocaleString('th-TH', {minimumFractionDigits: 2}),
+          est: (Math.random() * 50000000).toLocaleString('th-TH', {minimumFractionDigits: 2}),
+          matPct: Math.floor(Math.random() * 100) + '%', 
+          costPct: Math.floor(Math.random() * 100) + '%', 
+          housingType: Math.random() > 0.8 ? 'งานบ้านและที่ดินจัดสรร' : '',
+          foreman: 'ช่างทดสอบ',
+          exceptionType: Math.random() > 0.9 ? 'งานยกเว้น' : '',
+          days: daysPassed.toString(),
+          sla: s
         };
       });
     }
@@ -955,35 +964,93 @@
       
       if(target === 'dashboard') renderVisuals();
       if(target === 'data') {
-          applyFilters(); // Re-apply filter when opening data tab to ensure CLSD is excluded
+          applyFilters(); 
       }
       if(target === 'sla') lucide.createIcons();
+    }
+
+    // ================= TABLE RENDERING, SORTING, PAGINATION, SELECTION =================
+    
+    function toggleSelection(id) {
+        if (selectedRows.has(id)) {
+            selectedRows.delete(id);
+        } else {
+            selectedRows.add(id);
+        }
+        updateSelectionUI();
+    }
+
+    function toggleSelectAllPage() {
+        const isChecked = document.getElementById('selectAllCheckbox').checked;
+        const startIdx = (currentPage - 1) * rowsPerPage;
+        const endIdx = Math.min(startIdx + rowsPerPage, filteredData.length);
+        const paginatedData = filteredData.slice(startIdx, endIdx);
+
+        if (isChecked) {
+            paginatedData.forEach(d => selectedRows.add(d.id));
+        } else {
+            paginatedData.forEach(d => selectedRows.delete(d.id));
+        }
+        updateSelectionUI();
+    }
+
+    function clearSelection() {
+        selectedRows.clear();
+        updateSelectionUI();
+    }
+
+    function updateSelectionUI() {
+        const count = selectedRows.size;
+        const indicator = document.getElementById('selectionIndicator');
+        if (count > 0) {
+            indicator.classList.remove('hidden');
+            document.getElementById('selectedCount').innerText = count;
+        } else {
+            indicator.classList.add('hidden');
+        }
+        renderMatrix(); // re-render to update checkbox visuals
     }
 
     function applyFilters() {
       const q = document.getElementById('searchInput')?.value.toLowerCase() || '';
       const s = document.getElementById('filterSelect')?.value || 'ALL';
+      const fHousing = document.getElementById('filterHousing')?.value || 'ALL';
+      const fException = document.getElementById('filterException')?.value || 'ALL';
+
       const activeTabIsData = document.getElementById('view-data') && !document.getElementById('view-data').classList.contains('hidden');
 
       filteredData = globalData.filter(i => {
+        // 1. Text Search
         const mq = i.id.toLowerCase().includes(q) || i.ba.toLowerCase().includes(q) || (i.subj && i.subj.toLowerCase().includes(q));
+        
+        // 2. SLA Filter
         const ms = s === 'ALL' || i.sla === parseInt(s);
         
-        // แท๊บ "งานที่อยู่ระหว่างดำเนินการ" เอาเฉพาะที่ไม่ใช่ CLSD อย่างเดียว (TECO และอื่นๆ ให้โชว์ในนี้ด้วย)
+        // 3. Housing Filter
+        let mHousing = true;
+        if (fHousing === 'บ้านจัดสรร') mHousing = i.housingType.includes('บ้านและที่ดินจัดสรร');
+        else if (fHousing === 'ทั่วไป') mHousing = !i.housingType.includes('บ้านและที่ดินจัดสรร');
+
+        // 4. Exception Filter
+        let mException = true;
+        if (fException === 'ยกเว้น') mException = i.exceptionType.includes('ยกเว้น');
+        else if (fException === 'ทั่วไป') mException = !i.exceptionType.includes('ยกเว้น');
+        
+        // 5. Pending Status Filter (เฉพาะหน้าตารางข้อมูล ไม่เอา CLSD)
         let isPending = true;
         if (activeTabIsData) {
             isPending = i.sys.toUpperCase() !== 'CLSD';
         }
 
-        return mq && ms && isPending;
+        return mq && ms && mHousing && mException && isPending;
       });
       
       currentPage = 1; 
+      selectedRows.clear(); // Clear selection when filter changes for safety
+      updateSelectionUI();
       
       const dashView = document.getElementById('view-dashboard');
-      const dataView = document.getElementById('view-data');
       if(dashView && !dashView.classList.contains('hidden')) renderVisuals();
-      else if (dataView && !dataView.classList.contains('hidden')) renderMatrix();
     }
 
     function handleSort(col) {
@@ -998,10 +1065,10 @@
             let valA = a[col];
             let valB = b[col];
             
-            if (col === 'est' || col === 'actual' || col === 'matPct' || col === 'costPct') {
+            if (col === 'est' || col === 'actual' || col === 'matPct' || col === 'costPct' || col === 'days') {
                 valA = parseFloat(String(valA).replace(/,/g, '').replace('%', '')) || 0;
                 valB = parseFloat(String(valB).replace(/,/g, '').replace('%', '')) || 0;
-            } else if (col === 'sla') {
+            } else if (col === 'sla' || col === 'year') {
                 valA = parseInt(valA) || 0;
                 valB = parseInt(valB) || 0;
             } else {
@@ -1050,53 +1117,63 @@
       const startIdx = (currentPage - 1) * rowsPerPage;
       const endIdx = Math.min(startIdx + rowsPerPage, totalRows);
       const paginatedData = filteredData.slice(startIdx, endIdx);
+
+      // Check if all rows in current page are selected
+      const allSelectedOnPage = paginatedData.length > 0 && paginatedData.every(d => selectedRows.has(d.id));
+      const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+      if (selectAllCheckbox) selectAllCheckbox.checked = allSelectedOnPage;
       
       if (totalRows === 0) {
-        tbody.innerHTML = `<tr><td colSpan="12" class="px-6 py-24 text-center"><div class="flex flex-col items-center justify-center text-gray-400"><i data-lucide="scan-line" class="w-10 h-10 mb-4 opacity-30"></i><p class="text-sm font-medium tracking-wide">ไม่พบข้อมูลที่ค้นหา</p></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colSpan="15" class="px-6 py-24 text-center"><div class="flex flex-col items-center justify-center text-gray-400"><i data-lucide="scan-line" class="w-10 h-10 mb-4 opacity-30"></i><p class="text-sm font-medium tracking-wide">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</p></div></td></tr>`;
       } else {
         let html = '';
         paginatedData.forEach(i => {
           const info = SLA_PERIODS.find(p => p.value === i.sla) || SLA_PERIODS[2];
-          let bClass = STATUS_COLORS.DEFAULT;
-          const sm = i.sys.toUpperCase();
-          if(sm.includes('CRTD')) bClass = STATUS_COLORS.CRTD;
-          else if(sm.includes('REL')) bClass = STATUS_COLORS.REL;
-          else if(sm.includes('TECO')) bClass = STATUS_COLORS.TECO;
-          else if(sm.includes('CLSD')) bClass = STATUS_COLORS.CLSD;
-
-          const risk = calculateSmartRisk(i);
-          const safeDataStr = encodeURIComponent(JSON.stringify(i));
           
+          const isSelected = selectedRows.has(i.id);
+          const rowClass = isSelected ? 'row-selected' : 'hover:bg-gray-50';
+
           const matNum = parseFloat(String(i.matPct).replace(/,/g, ''));
           const costNum = parseFloat(String(i.costPct).replace(/,/g, ''));
           const matClass = (!isNaN(matNum) && matNum >= 80) ? 'text-emerald-600 font-bold' : 'text-gray-500';
           const costClass = (!isNaN(costNum) && costNum >= 80) ? 'text-emerald-600 font-bold' : 'text-gray-500';
 
+          const parsedDays = parseInt(String(i.days).replace(/,/g, ''));
+          let alertHtml = '<span class="text-gray-400">-</span>';
+          
+          if (!isNaN(parsedDays)) {
+              const limitDays = i.sla * 30; 
+              if (parsedDays > limitDays) {
+                  alertHtml = `<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded-md border border-red-100 text-[10px] whitespace-nowrap"><i data-lucide="alert-circle" class="w-3 h-3 inline mb-0.5 mr-0.5"></i> เกิน ${i.sla} เดือนแล้ว</span>`;
+              } else {
+                  alertHtml = `<span class="text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 text-[10px] whitespace-nowrap"><i data-lucide="check-circle" class="w-3 h-3 inline mb-0.5 mr-0.5"></i> ปกติ</span>`;
+              }
+          }
+
           html += `
-            <tr class="table-row-premium">
-              <td class="px-6 py-4.5 whitespace-nowrap font-display text-[13px] text-gray-500 font-medium">${i.ba}</td>
-              <td class="px-6 py-4.5 whitespace-nowrap font-display font-bold text-gray-800 tracking-wide text-sm">${i.id}</td>
-              <td class="px-6 py-4.5 min-w-[250px] leading-relaxed text-gray-700 font-medium">${i.subj}</td>
-              <td class="px-4 py-4.5 whitespace-nowrap text-xs text-gray-700 font-medium tracking-wider">${i.sys}</td>
-              <td class="px-4 py-4.5 whitespace-nowrap text-[11px] text-gray-600 font-medium">${i.usr}</td>
-              <td class="px-4 py-4.5 whitespace-nowrap text-right font-display text-[13px] text-gray-600">${i.est}</td>
-              <td class="px-4 py-4.5 whitespace-nowrap text-right font-display text-[13px] text-gray-600">${i.actual}</td>
-              <td class="px-4 py-4.5 whitespace-nowrap text-center font-display text-[13px] ${matClass}">${i.matPct}</td>
-              <td class="px-4 py-4.5 whitespace-nowrap text-center font-display text-[13px] ${costClass}">${i.costPct}</td>
-              <td class="px-4 py-4.5 whitespace-nowrap text-center">
-                <span class="px-2.5 py-1 inline-flex items-center text-xs font-bold rounded-md" style="background-color: ${info.color}15; color: ${info.color};">
+            <tr class="table-row-premium transition-colors ${rowClass}">
+              <td class="px-4 py-4 whitespace-nowrap text-center border-r border-gray-100">
+                <input type="checkbox" class="custom-checkbox rounded border-gray-300" ${isSelected ? 'checked' : ''} onclick="toggleSelection('${i.id}')">
+              </td>
+              <td class="px-5 py-4 whitespace-nowrap font-display text-[12px] text-gray-500">${i.ba}</td>
+              <td class="px-3 py-4 whitespace-nowrap text-center font-display text-[12px] text-gray-500">${i.year}</td>
+              <td class="px-4 py-4 whitespace-nowrap font-display font-bold text-gray-800 tracking-wide text-xs">${i.id}</td>
+              <td class="px-5 py-4 min-w-[200px] leading-snug text-gray-700 font-medium text-[13px]">${i.subj}</td>
+              <td class="px-4 py-4 min-w-[120px] text-gray-600 font-medium text-xs leading-snug">${i.foreman}</td>
+              <td class="px-3 py-4 whitespace-nowrap text-[11px] font-bold text-gray-700">${i.sys}</td>
+              <td class="px-4 py-4 min-w-[120px] text-[11px] text-gray-500 leading-snug">${i.usr}</td>
+              <td class="px-4 py-4 whitespace-nowrap text-right font-display text-[12px] text-gray-700">${i.est}</td>
+              <td class="px-4 py-4 whitespace-nowrap text-right font-display text-[12px] text-gray-700">${i.actual}</td>
+              <td class="px-3 py-4 whitespace-nowrap text-center font-display text-[12px] ${matClass}">${i.matPct}</td>
+              <td class="px-3 py-4 whitespace-nowrap text-center font-display text-[12px] ${costClass}">${i.costPct}</td>
+              <td class="px-4 py-4 whitespace-nowrap text-center font-display text-[12px] font-bold text-gray-700">${i.days}</td>
+              <td class="px-3 py-4 whitespace-nowrap text-center">
+                <span class="px-2 py-0.5 inline-flex items-center text-[11px] font-bold rounded" style="background-color: ${info.color}15; color: ${info.color};">
                   ${i.sla} ด.
                 </span>
               </td>
-              <td class="px-6 py-4.5 whitespace-nowrap bg-pea-purple/5 text-center">
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center ring-1 ${risk.color}">
-                  <i data-lucide="${risk.icon}" class="w-3 h-3 mr-1"></i> ${risk.label}
-                </span>
-              </td>
-              <td class="px-6 py-4.5 whitespace-nowrap text-center">
-                 <button onclick="openActionPlanModal('${safeDataStr}')" class="px-3 py-1.5 bg-white border border-gray-200 shadow-sm rounded-lg text-xs font-semibold text-pea-purple hover:bg-pea-purple hover:text-white transition-colors inline-flex items-center">
-                    <i data-lucide="sparkles" class="w-3 h-3 mr-1"></i> ขอแผนแก้ปัญหา
-                 </button>
+              <td class="px-5 py-4 whitespace-nowrap text-center border-l border-gray-100 bg-gray-50/30">
+                ${alertHtml}
               </td>
             </tr>
           `;
@@ -1115,14 +1192,34 @@
       lucide.createIcons();
     }
 
+    // ================= EXPORT & PRINT FUNCTIONS =================
+    
+    function getExportData() {
+        // หากมีการเลือก Checkbox ให้ดึงเฉพาะข้อมูลที่เลือก หากไม่เลือกเลยให้ดึงข้อมูลทั้งหมดที่ถูกกรองอยู่
+        if (selectedRows.size > 0) {
+            return filteredData.filter(d => selectedRows.has(d.id));
+        }
+        return filteredData;
+    }
+
     function exportExcel() {
-        if (filteredData.length === 0) { alert("ไม่มีข้อมูลสำหรับส่งออก"); return; }
-        const exportData = filteredData.map(i => ({
-            "BA": i.ba, "หมายเลขงาน": i.id, "ชื่องาน": i.subj,
-            "สถานะระบบ": i.sys, "สถานะผู้ใช้": i.usr,
-            "รวมประมาณการ (฿)": i.est, "รวมค่าใช้จ่ายจริง (฿)": i.actual,
-            "% พัสดุ": i.matPct, "% ค่าใช้จ่าย": i.costPct,
-            "ระยะเวลา SLA (เดือน)": i.sla
+        const dataToExport = getExportData();
+        if (dataToExport.length === 0) { alert("ไม่มีข้อมูลสำหรับส่งออก"); return; }
+        
+        const exportData = dataToExport.map(i => ({
+            "การไฟฟ้า": i.ba, 
+            "ปี": i.year,
+            "หมายเลขงาน": i.id, 
+            "ชื่องาน": i.subj,
+            "ช่างคุมงาน": i.foreman,
+            "สถานะระบบ": i.sys, 
+            "สถานะผู้ใช้": i.usr,
+            "มูลค่าประมาณการ (฿)": i.est, 
+            "มูลค่างานจริง (฿)": i.actual,
+            "% พัสดุ": i.matPct, 
+            "% ค่าใช้จ่าย": i.costPct,
+            "จำนวนวัน": i.days,
+            "SLA (เดือน)": i.sla
         }));
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
@@ -1130,21 +1227,25 @@
         XLSX.writeFile(workbook, "PEA_SLA_Pending_Jobs.xlsx");
     }
 
-    function exportPDF() {
-        if (filteredData.length === 0) { alert("ไม่มีข้อมูลสำหรับส่งออก"); return; }
+    function printTable(isPdf = false) {
+        const dataToExport = getExportData();
+        if (dataToExport.length === 0) { alert("ไม่มีข้อมูลสำหรับพิมพ์"); return; }
+        
         const printWindow = window.open('', '_blank');
-        let htmlTableRows = filteredData.map(i => `
+        let htmlTableRows = dataToExport.map(i => `
             <tr>
-                <td style="border: 1px solid #ddd; padding: 6px;">${i.ba}</td>
-                <td style="border: 1px solid #ddd; padding: 6px; font-weight: bold;">${i.id}</td>
-                <td style="border: 1px solid #ddd; padding: 6px;">${i.subj}</td>
-                <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">${i.sys}</td>
-                <td style="border: 1px solid #ddd; padding: 6px; text-align: right;">${i.est}</td>
-                <td style="border: 1px solid #ddd; padding: 6px; text-align: right;">${i.actual}</td>
-                <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">${i.costPct}</td>
-                <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">${i.sla} เดือน</td>
+                <td style="border: 1px solid #ddd; padding: 4px;">${i.ba}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; font-weight: bold;">${i.id}</td>
+                <td style="border: 1px solid #ddd; padding: 4px;">${i.subj}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.sys}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: right;">${i.est}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.costPct}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.days}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.sla}</td>
             </tr>
         `).join('');
+
+        const reportTitle = isPdf ? "บันทึกรายงาน PDF" : "พิมพ์รายงาน";
 
         printWindow.document.write(`
             <html>
@@ -1152,48 +1253,64 @@
                 <title>PEA SLA Report</title>
                 <style>
                     @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap');
-                    body { font-family: 'Sarabun', sans-serif; padding: 30px; color: #333; }
+                    body { font-family: 'Sarabun', sans-serif; padding: 20px; color: #000; }
                     .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; border-bottom: 2px solid #741b47; padding-bottom: 10px; }
-                    .header h2 { color: #741b47; margin: 0; font-size: 20px; }
-                    .header p { margin: 0; font-size: 12px; color: #666; }
+                    .header h2 { color: #741b47; margin: 0; font-size: 18px; }
+                    .header p { margin: 0; font-size: 12px; color: #555; }
                     table { width: 100%; border-collapse: collapse; font-size: 11px; }
-                    th { background-color: #f3f4f6; color: #444; border: 1px solid #ddd; padding: 8px; text-align: center; }
-                    @media print { @page { size: landscape; margin: 10mm; } }
+                    th { background-color: #f3f4f6; color: #000; border: 1px solid #ddd; padding: 6px; text-align: center; }
+                    @media print { 
+                        @page { size: landscape; margin: 10mm; } 
+                        body { padding: 0; }
+                    }
                 </style>
             </head>
             <body>
                 <div class="header">
-                    <h2>รายงานระบบติดตามระยะเวลาปิดงานโครงการ (PEA SLA Tracking) - งานที่อยู่ระหว่างดำเนินการ</h2>
-                    <p>ข้อมูล ณ วันที่: ${new Date().toLocaleString('th-TH')}</p>
+                    <h2>รายงานระบบติดตามระยะเวลาปิดงานโครงการ (งานที่อยู่ระหว่างดำเนินการ)</h2>
+                    <p>ข้อมูล ณ วันที่: ${new Date().toLocaleString('th-TH')} | จำนวน: ${dataToExport.length} รายการ</p>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <th>BA</th><th>หมายเลขงาน</th><th style="text-align: left;">ชื่องาน</th>
-                            <th>สถานะระบบ</th><th style="text-align: right;">รวมประมาณการ (฿)</th>
-                            <th style="text-align: right;">รวมค่าใช้จ่ายจริง (฿)</th><th>% ค่าใช้จ่าย</th><th>SLA</th>
+                            <th>กฟภ.</th><th>หมายเลขงาน</th><th style="text-align: left;">ชื่องาน</th>
+                            <th>ระบบ</th><th style="text-align: right;">ประมาณการ (฿)</th>
+                            <th>% คชจ.</th><th>จำนวนวัน</th><th>SLA (เดือน)</th>
                         </tr>
                     </thead>
                     <tbody>${htmlTableRows}</tbody>
                 </table>
-                <script>window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 500); };<\/script>
+                <script>
+                    window.onload = function() { 
+                        setTimeout(() => { 
+                            window.print(); 
+                            // ปิดหน้าต่างอัตโนมัติหลังจากสั่งพิมพ์เสร็จ
+                            window.close(); 
+                        }, 500); 
+                    };
+                <\/script>
             </body>
             </html>
         `);
         printWindow.document.close();
     }
 
+    function exportPDF() {
+        printTable(true);
+    }
+
     // ================= DASHBOARD =================
     function renderVisuals() {
-      // หน้า Dashboard ให้แสดงข้อมูลทั้งหมด
+      // หน้า Dashboard ให้แสดงข้อมูลทั้งหมด เพื่อภาพรวมขององค์กร
       filteredData = globalData;
       
       const canvas1 = document.getElementById('slaBarChart');
       const canvas2 = document.getElementById('slaPieChart');
       const canvas3 = document.getElementById('statusBarChart');
       const canvas4 = document.getElementById('baSlaChart');
+      const canvasOverdue = document.getElementById('overdueChart');
 
-      if (!canvas1 || !canvas2 || !canvas3 || !canvas4) return;
+      if (!canvas1 || !canvas2 || !canvas3 || !canvas4 || !canvasOverdue) return;
 
       const tot = filteredData.length;
       const comp = filteredData.filter(d => d.sys && d.sys.toUpperCase().includes('CLSD')).length;
@@ -1206,10 +1323,7 @@
       const pBar = document.getElementById('progressCompleted');
       if(pBar) pBar.style.width = tot > 0 ? `${(comp/tot)*100}%` : '0%';
 
-      const summaryBox = document.getElementById('aiSummaryBox');
-      if(summaryBox) summaryBox.innerHTML = '<p class="text-gray-500 font-light text-sm italic">คลิกปุ่ม "วิเคราะห์ภาพรวม" เพื่อให้ AI สรุปข้อมูลโครงการทั้งหมดแบบ Real-time...</p>';
-
-      ['slaBar', 'slaPie', 'statusBar', 'baSla'].forEach(id => { if(charts[id]) charts[id].destroy(); });
+      ['slaBar', 'slaPie', 'statusBar', 'baSla', 'overdue'].forEach(id => { if(charts[id]) charts[id].destroy(); });
       if(tot === 0) return;
 
       const getGradient = (ctx, hex, transparent = false) => {
@@ -1220,6 +1334,7 @@
         return grad;
       }
 
+      // 1. SLA Bar Chart
       const c1 = canvas1.getContext('2d');
       const s1 = SLA_PERIODS.map(p => ({ l: `${p.value} เดือน`, c: filteredData.filter(d=>d.sla===p.value).length, col: p.color }));
       charts.slaBar = new Chart(c1, {
@@ -1227,6 +1342,7 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, border:{display:false} }, x: { grid: { display: false }, border:{display:false} } }, animation: { duration: 2000, easing: 'easeOutQuart' } }
       });
 
+      // 2. SLA Pie Chart
       const c2 = canvas2.getContext('2d');
       const pData = s1.filter(s => s.c > 0);
       charts.slaPie = new Chart(c2, {
@@ -1247,6 +1363,7 @@
         }).join('');
       }
 
+      // 3. Status Bar Chart
       const c3 = canvas3.getContext('2d');
       const sc = {}; filteredData.forEach(d => { sc[d.sys] = (sc[d.sys] || 0) + 1; });
       const sa = Object.keys(sc).map(k => ({ n: k, c: sc[k] })).sort((a,b) => b.c - a.c);
@@ -1256,6 +1373,7 @@
         options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, border:{display:false} }, y: { grid: { display: false }, border:{display:false} } }, animation: { duration: 2000, easing: 'easeOutQuart' } }
       });
 
+      // 4. BA SLA Stacked Chart
       const c4 = canvas4.getContext('2d');
       const gba = {}; filteredData.forEach(d => { const b = d.ba; if (!gba[b]) { gba[b] = { n: b, t: 0 }; SLA_PERIODS.forEach(p => gba[b][p.value] = 0); } gba[b][d.sla] += 1; gba[b].t += 1; });
       const bArr = Object.values(gba).sort((a,b) => b.t - a.t).slice(0, 15);
@@ -1264,215 +1382,52 @@
         type: 'bar', data: { labels: bArr.map(b => b.n), datasets: baDatasets },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 6, padding: 20 } }, tooltip: { mode: 'index', intersect: false } }, scales: { x: { stacked: true, grid: { display: false }, border:{display:false} }, y: { stacked: true, beginAtZero: true, border:{display:false} } }, animation: { duration: 2000, easing: 'easeOutQuart' } }
       });
-    }
 
-    // ================= AI API INTEGRATION (Gemini) =================
-    
-    async function fetchWithRetry(url, options, maxRetries = 3) {
-      const delays = [1000, 2000, 4000];
-      for (let i = 0; i < maxRetries; i++) {
-        try {
-          const response = await fetch(url, options);
-          const text = await response.text(); 
-          if (!response.ok) {
-             throw new Error(`API Error ${response.status}: ${text}`);
-          }
-          if (!text) {
-             throw new Error("ระบบปลายทางส่งค่าว่างกลับมา");
-          }
-          try {
-            return JSON.parse(text);
-          } catch(e) {
-            throw new Error("ข้อมูลที่ได้กลับมาไม่ใช่รูปแบบ JSON: " + text.substring(0, 100));
-          }
-        } catch (error) {
-          if (i === maxRetries - 1) throw error;
-          await new Promise(resolve => setTimeout(resolve, delays[i]));
+      // 5. NEW: Overdue Projects Chart
+      const cOverdue = canvasOverdue.getContext('2d');
+      const overdueCounts = {};
+      SLA_PERIODS.forEach(p => overdueCounts[p.value] = 0);
+
+      filteredData.forEach(d => {
+         const parsedDays = parseInt(String(d.days).replace(/,/g, ''));
+         // ถ้างบยังไม่ถูกปิด (ไม่ใช่ CLSD) และจำนวนวันเกิน SLA กำหนด
+         if (d.sys.toUpperCase() !== 'CLSD' && !isNaN(parsedDays) && parsedDays > (d.sla * 30)) {
+             if (overdueCounts[d.sla] !== undefined) {
+                 overdueCounts[d.sla]++;
+             }
+         }
+      });
+
+      const overdueLabels = SLA_PERIODS.map(p => `เกินกำหนด SLA ${p.value} ด.`);
+      const overdueData = SLA_PERIODS.map(p => overdueCounts[p.value]);
+      
+      const gradOverdue = cOverdue.createLinearGradient(0, 0, 600, 0); 
+      gradOverdue.addColorStop(0, 'rgba(239, 68, 68, 0.2)'); // Red light
+      gradOverdue.addColorStop(1, 'rgba(220, 38, 38, 0.8)'); // Red dark
+
+      charts.overdue = new Chart(cOverdue, {
+        type: 'bar', 
+        data: { 
+            labels: overdueLabels, 
+            datasets: [{ 
+                label: 'จำนวนงานที่ล่าช้า (โครงการ)',
+                data: overdueData, 
+                backgroundColor: gradOverdue, 
+                borderColor: '#dc2626', 
+                borderWidth: { right: 2 }, 
+                borderRadius: { topRight: 8, bottomRight: 8 }, 
+                barPercentage: 0.6 
+            }] 
+        },
+        options: { 
+            indexAxis: 'y', 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { legend: { display: false } }, 
+            scales: { x: { beginAtZero: true, border:{display:false} }, y: { grid: { display: false }, border:{display:false} } }, 
+            animation: { duration: 2000, easing: 'easeOutQuart' } 
         }
-      }
-    }
-
-    async function fetchGeminiAPI(prompt, temperature = 0.2) {
-      if (!apiKey || apiKey.trim() === '') {
-        throw new Error("API_KEY_MISSING");
-      }
-      // เปลี่ยนจากโมเดล Preview เป็นรุ่นมาตรฐานที่เสถียรสำหรับ Production
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-      const options = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: temperature }
-        })
-      };
-
-      const data = await fetchWithRetry(url, options);
-      if (data.error) throw new Error(data.error?.message || "เกิดข้อผิดพลาดในการประมวลผล");
-      return data.candidates[0].content.parts[0].text;
-    }
-
-    // --- Feature: AI Executive Summary ---
-    async function generateExecutiveSummary() {
-      const btn = document.getElementById('btnGenerateSummary');
-      const box = document.getElementById('aiSummaryBox');
-      
-      btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> กำลังวิเคราะห์...';
-      btn.classList.add('opacity-80', 'cursor-not-allowed');
-      box.innerHTML = '<div class="flex items-center text-pea-purple"><i data-lucide="brain-circuit" class="w-5 h-5 mr-3 animate-pulse"></i><span class="animate-pulse font-medium text-sm">AI กำลังอ่านและสรุปผลข้อมูล...</span></div>';
-      lucide.createIcons();
-
-      try {
-        const tot = filteredData.length;
-        const comp = filteredData.filter(d => d.sys === 'CLSD').length;
-        const limitData = filteredData.slice(0, 50).map(d => ({ WBS: d.id, Sys: d.sys, SLA: d.sla, CostPct: d.costPct }));
-        
-        const prompt = `คุณคือผู้ช่วยผู้บริหาร PEA สรุปข้อมูล Dashboard ให้ผู้บริหารอ่านง่ายๆ ภายใน 3-4 บรรทัด (ใช้ Markdown Bullet)
-ข้อมูลปัจจุบัน: ทั้งหมด ${tot} งาน, ปิดแล้ว (CLSD) ${comp} งาน, อยู่ระหว่างดำเนินการ ${tot-comp} งาน.
-ตัวอย่างข้อมูล 50 งาน: ${JSON.stringify(limitData)}
-เขียนสรุปภาษาไทยแบบเฉียบขาดและเป็นมืออาชีพ ชี้ให้เห็นถึงความเสี่ยงหรือแนวโน้มที่น่าสนใจ`;
-
-        const result = await fetchGeminiAPI(prompt, 0.4);
-        const parsed = typeof marked !== 'undefined' ? marked.parse(result) : result;
-        box.innerHTML = `<div class="ai-markdown text-sm text-gray-700 w-full animate-fade-in-up">${parsed}</div>`;
-        
-      } catch (error) {
-        if (error.message === "API_KEY_MISSING") {
-          box.innerHTML = '<div class="text-red-500 text-sm font-medium">⚠️ โปรดใส่ API Key ในโค้ดก่อนใช้งานฟีเจอร์นี้</div>';
-        } else {
-          box.innerHTML = `<div class="text-red-500 text-sm">❌ เกิดข้อผิดพลาด: ${error.message}</div>`;
-        }
-      } finally {
-        btn.innerHTML = '<i data-lucide="wand-2" class="w-4 h-4 mr-2"></i> วิเคราะห์ภาพรวม';
-        btn.classList.remove('opacity-80', 'cursor-not-allowed');
-        lucide.createIcons();
-      }
-    }
-
-    // --- Feature: AI Action Plan Modal ---
-    async function openActionPlanModal(encodedData) {
-      const data = JSON.parse(decodeURIComponent(encodedData));
-      const modal = document.getElementById('aiModal');
-      const load = document.getElementById('modalLoading');
-      const res = document.getElementById('modalResult');
-      
-      document.getElementById('modalWbsId').innerText = `WBS: ${data.id} | BA: ${data.ba}`;
-      
-      modal.classList.remove('hidden');
-      setTimeout(() => {
-        modal.classList.remove('opacity-0');
-        document.getElementById('aiModalContent').classList.remove('scale-95');
-      }, 10);
-      
-      load.classList.remove('hidden');
-      res.classList.add('hidden');
-      res.innerHTML = '';
-
-      try {
-        const prompt = `คุณคือที่ปรึกษาโครงการ PEA 
-โครงการนี้มีรายละเอียดคือ: ชื่องาน: ${data.subj}, สถานะระบบ: ${data.sys}, ประมาณการ: ${data.est} บาท, เบิกจ่ายจริง: ${data.actual} บาท, %การเบิกจ่าย: ${data.costPct}, SLA: ${data.sla} เดือน
-จงเขียน Action Plan (สิ่งที่ควรทำต่อไป 3-4 ข้อ) เพื่อให้โครงการนี้ปิดงานได้สำเร็จและตรงตาม SLA หรือแก้ปัญหาความล่าช้า.
-เขียนตอบเป็นภาษาไทยแบบ Bullet points สั้นๆ กระชับ ชัดเจน (ใช้ Markdown)`;
-
-        const result = await fetchGeminiAPI(prompt, 0.2);
-        const parsed = typeof marked !== 'undefined' ? marked.parse(result) : result;
-        
-        load.classList.add('hidden');
-        res.innerHTML = parsed;
-        res.classList.remove('hidden');
-        res.classList.add('animate-fade-in-up');
-        
-      } catch (error) {
-        load.classList.add('hidden');
-        res.classList.remove('hidden');
-        if (error.message === "API_KEY_MISSING") {
-          res.innerHTML = '<div class="p-4 bg-red-50 text-red-600 rounded-xl border border-red-100">⚠️ โปรดใส่ API Key ในโค้ดก่อนใช้งานฟีเจอร์ AI Action Plan ครับ</div>';
-        } else {
-          res.innerHTML = `<div class="p-4 bg-red-50 text-red-600 rounded-xl border border-red-100">❌ Error: ${error.message}</div>`;
-        }
-      }
-    }
-
-    function closeAiModal() {
-      const modal = document.getElementById('aiModal');
-      modal.classList.add('opacity-0');
-      document.getElementById('aiModalContent').classList.add('scale-95');
-      setTimeout(() => { modal.classList.add('hidden'); }, 300);
-    }
-
-    // --- Feature: Chat Copilot ---
-    function toggleChat() {
-      const chat = document.getElementById('chatWindow');
-      isChatOpen = !isChatOpen;
-      if (isChatOpen) {
-        chat.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
-        chat.classList.add('opacity-100', 'scale-100');
-        document.getElementById('chatInput').focus();
-      } else {
-        chat.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-        chat.classList.remove('opacity-100', 'scale-100');
-      }
-    }
-
-    function handleChatKeyPress(e) { if (e.key === 'Enter') sendChatMessage(); }
-
-    async function sendChatMessage() {
-      const input = document.getElementById('chatInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      appendMessage('user', text);
-      input.value = '';
-      
-      document.getElementById('typingIndicator').classList.remove('hidden');
-      scrollToBottom();
-
-      if (!apiKey || apiKey.trim() === '') {
-          document.getElementById('typingIndicator').classList.add('hidden');
-          appendMessage('ai', '⚠️ **ไม่พบ API Key**<br>ระบบไม่สามารถเชื่อมต่อ AI ได้เนื่องจากยังไม่ได้ระบุ API Key');
-          return;
-      }
-
-      try {
-        const tot = filteredData.length;
-        const comp = filteredData.filter(d => d.sys === 'CLSD').length;
-        const limitData = filteredData.slice(0, 50).map(d => ({ WBS: d.id, Sys: d.sys, Est: d.est, SLA: d.sla }));
-        const prompt = `คุณคือ PEA Data Copilot ผู้ช่วยตอบคำถามจากข้อมูลโครงการ 
-        จำนวนงานปัจจุบัน: ${tot}, ปิดแล้ว (CLSD): ${comp}, ดำเนินการ: ${tot-comp}. 
-        ข้อมูลจำลอง: ${JSON.stringify(limitData)}. คำถาม: ${text}. (ตอบสั้นๆ เป็นภาษาไทยด้วย Markdown)`;
-        
-        const result = await fetchGeminiAPI(prompt, 0.2);
-        
-        document.getElementById('typingIndicator').classList.add('hidden');
-        appendMessage('ai', result);
-
-      } catch (error) {
-        document.getElementById('typingIndicator').classList.add('hidden');
-        let errorMsg = "ขออภัยครับ เกิดข้อผิดพลาดในการเชื่อมต่อกับ AI";
-        if (error.message.includes("API Error 403") || error.message.includes("API_KEY_INVALID")) {
-            errorMsg = "⚠️ **API Key ไม่ถูกต้อง หรือสิทธิ์ถูกปฏิเสธ**";
-        }
-        appendMessage('ai', errorMsg + "<br><span class='text-[10px] text-gray-400 mt-1 block'>" + error.message + "</span>");
-      }
-    }
-
-    function appendMessage(sender, text) {
-      const container = document.getElementById('chatMessages');
-      const div = document.createElement('div');
-      div.className = `flex flex-col chat-bubble-enter ${sender === 'user' ? 'items-end' : 'items-start'}`;
-      if (sender === 'user') {
-        div.innerHTML = `<div class="bg-gradient-to-r from-pea-purple to-pea-purpleLight text-white text-sm rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[85%] shadow-sm">${text}</div>`;
-      } else {
-        const parsed = typeof marked !== 'undefined' ? marked.parse(text) : text;
-        div.innerHTML = `<div class="bg-white border border-gray-100 shadow-sm text-gray-700 text-sm rounded-2xl rounded-tl-sm px-4 py-3 max-w-[90%] leading-relaxed ai-markdown">${parsed}</div>`;
-      }
-      container.insertBefore(div, document.getElementById('typingIndicator')); 
-      scrollToBottom();
-    }
-
-    function scrollToBottom() {
-      const container = document.getElementById('chatMessages');
-      container.scrollTop = container.scrollHeight;
+      });
     }
 
     window.onload = boot;
