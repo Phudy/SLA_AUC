@@ -246,6 +246,17 @@
     <div class="w-64 h-px bg-gray-100 mt-8 overflow-hidden">
       <div id="loadingProgress" class="h-full bg-pea-purple w-0 transition-all duration-300 ease-out"></div>
     </div>
+    
+    <!-- เพิ่มเครดิตหน้าโหลดระบบ -->
+    <div class="absolute bottom-10 w-full text-center">
+      <div class="inline-flex flex-col items-center justify-center transform translate-y-4 opacity-0 animate-[fadeInUp_1s_ease-out_0.5s_forwards]">
+        <span class="text-[9px] font-bold text-gray-400 tracking-[0.2em] uppercase mb-1.5">Designed & Developed By</span>
+        <div class="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-full border border-gray-100 shadow-sm">
+          <i data-lucide="code-2" class="w-3.5 h-3.5 text-pea-purple"></i>
+          <span class="text-xs font-medium text-gray-700">นายภูวดล กล่ำทอง ผบส.กบฟ.(ก3)</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ================= STEALTH NAV BAR ================= -->
@@ -283,7 +294,7 @@
   <main id="mainContent" class="w-full px-2 sm:px-6 py-6 hidden flex-grow relative">
     
     <!-- Segmented Controls -->
-    <div class="flex justify-center md:justify-start mb-6 opacity-0" id="tabContainer">
+    <div class="flex justify-center md:justify-start mb-4 opacity-0" id="tabContainer">
       <div class="tab-container inline-flex space-x-1 overflow-x-auto no-scrollbar">
         <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn tab-active px-6 md:px-8 py-2.5 text-sm flex items-center">
           <i data-lucide="layout-grid" class="w-4 h-4 mr-2"></i> ภาพรวมข้อมูล
@@ -294,6 +305,92 @@
         <button onclick="switchTab('sla')" id="tab-sla" class="tab-btn tab-inactive px-6 md:px-8 py-2.5 text-sm flex items-center">
           <i data-lucide="info" class="w-4 h-4 mr-2"></i> กฎและเงื่อนไข SLA
         </button>
+      </div>
+    </div>
+
+    <!-- ================= GLOBAL FILTERS (ย้ายมาเป็นส่วนกลาง) ================= -->
+    <div id="globalFilters" class="mb-6 aero-glass p-3 rounded-2xl flex flex-col xl:flex-row gap-3 items-center justify-between opacity-0">
+      <div class="flex items-center text-[#741b47] font-bold whitespace-nowrap pl-2 w-full xl:w-auto">
+        <i data-lucide="filter" class="w-5 h-5 mr-2"></i> ตัวกรองข้อมูล
+      </div>
+      <div class="flex flex-wrap gap-2 w-full xl:w-auto justify-start xl:justify-end">
+        
+        <!-- Search -->
+        <div class="relative w-full sm:w-auto sm:flex-1 md:w-48 group">
+          <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+            <div class="pl-2 text-gray-400 group-focus-within:text-pea-purple transition-colors">
+              <i data-lucide="search" class="w-3.5 h-3.5"></i>
+            </div>
+            <input type="text" id="searchInput" placeholder="ค้นหาข้อมูล..." class="w-full py-1.5 px-2 bg-transparent text-xs text-gray-800 placeholder-gray-400 focus:outline-none" onkeyup="applyFilters()"/>
+          </div>
+        </div>
+
+        <!-- Filter BA -->
+        <div class="relative w-[48%] sm:w-auto md:w-32 group">
+          <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+            <div class="pl-2 text-gray-400"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i></div>
+            <select id="filterBa" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+              <option value="ALL">กฟภ.: ทั้งหมด</option>
+            </select>
+            <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+          </div>
+        </div>
+        
+        <!-- Filter SLA -->
+        <div class="relative w-[48%] sm:w-auto md:w-32 group">
+          <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+            <div class="pl-2 text-gray-400"><i data-lucide="clock" class="w-3.5 h-3.5"></i></div>
+            <select id="filterSelect" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+              <option value="ALL">SLA ทั้งหมด</option>
+            </select>
+            <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+          </div>
+        </div>
+
+        <!-- Filter Alert -->
+        <div class="relative w-full sm:w-auto md:w-32 group">
+          <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+            <div class="pl-2 text-gray-400"><i data-lucide="bell" class="w-3.5 h-3.5"></i></div>
+            <select id="filterAlert" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+              <option value="ALL">เตือน: ทั้งหมด</option>
+              <option value="ปกติ">ปกติ</option>
+              <option value="เกินกำหนด">เกินกำหนด</option>
+            </select>
+            <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+          </div>
+        </div>
+
+        <!-- Filter Housing -->
+        <div class="relative w-[48%] sm:w-auto md:w-32 group">
+          <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+            <div class="pl-2 text-gray-400"><i data-lucide="home" class="w-3.5 h-3.5"></i></div>
+            <select id="filterHousing" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+              <option value="ALL">จัดสรร: ทั้งหมด</option>
+              <option value="บ้านจัดสรร">เฉพาะจัดสรร</option>
+              <option value="ทั่วไป">ทั่วไป (ไม่จัดสรร)</option>
+            </select>
+            <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+          </div>
+        </div>
+
+        <!-- Filter Exception -->
+        <div class="relative w-[48%] sm:w-auto md:w-32 group">
+          <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
+            <div class="pl-2 text-gray-400"><i data-lucide="shield-alert" class="w-3.5 h-3.5"></i></div>
+            <select id="filterException" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
+              <option value="ALL">ยกเว้น: ทั้งหมด</option>
+              <option value="ยกเว้น">เฉพาะยกเว้น</option>
+              <option value="ทั่วไป">ทั่วไป (ไม่ยกเว้น)</option>
+            </select>
+            <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
+          </div>
+        </div>
+
+        <!-- Reset Filters -->
+        <button onclick="resetFilters()" class="flex items-center justify-center w-full sm:w-auto px-3 py-1.5 bg-gray-100 text-gray-600 hover:text-pea-purple border border-gray-200 rounded-lg hover:bg-gray-200 text-[11px] font-semibold shadow-sm transition-all">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 mr-1"></i> ล้างตัวกรอง
+        </button>
+
       </div>
     </div>
 
@@ -439,10 +536,10 @@
     <div id="view-data" class="hidden opacity-0">
       
       <div class="mb-4 flex flex-col xl:flex-row justify-between items-center gap-3 aero-glass p-3 rounded-2xl">
-        <div class="flex items-center w-full xl:w-auto justify-between xl:justify-start">
-            <h2 class="text-lg font-bold text-gray-800 tracking-wide flex items-center pl-2 mr-4 whitespace-nowrap">
+        <div class="flex items-center w-full justify-between">
+            <h2 class="text-lg font-bold text-gray-800 tracking-wide flex items-center pl-2">
             <i data-lucide="database" class="w-5 h-5 mr-2 text-pea-purple"></i>
-            งานที่อยู่ระหว่างดำเนินการ
+            ตารางงานที่อยู่ระหว่างดำเนินการ
             </h2>
             
             <!-- Export Buttons (Desktop) -->
@@ -450,94 +547,13 @@
                 <button onclick="exportExcel()" class="flex items-center px-3 py-1.5 bg-green-50 text-green-700 border border-green-200 rounded-lg hover:bg-green-100 hover:shadow-sm transition-all text-xs font-semibold">
                     <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1.5"></i> Excel
                 </button>
-                <button onclick="exportPDF()" class="flex items-center px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-lg hover:bg-red-100 hover:shadow-sm transition-all text-xs font-semibold">
+                <button onclick="exportPDF()" class="flex items-center px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-lg hover:bg-red-100 hover:shadow-md transition-all text-xs font-semibold">
                     <i data-lucide="file-text" class="w-4 h-4 mr-1.5"></i> PDF
                 </button>
                 <button onclick="printTable()" class="flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-100 hover:shadow-sm transition-all text-xs font-semibold">
                     <i data-lucide="printer" class="w-4 h-4 mr-1.5"></i> พิมพ์
                 </button>
             </div>
-        </div>
-
-        <!-- Filters (Compact) -->
-        <div class="flex flex-wrap gap-2 w-full xl:w-auto justify-end">
-          
-          <!-- Search -->
-          <div class="relative w-full sm:w-auto sm:flex-1 md:w-48 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
-              <div class="pl-2 text-gray-400 group-focus-within:text-pea-purple transition-colors">
-                <i data-lucide="search" class="w-3.5 h-3.5"></i>
-              </div>
-              <input type="text" id="searchInput" placeholder="ค้นหาข้อมูล..." class="w-full py-1.5 px-2 bg-transparent text-xs text-gray-800 placeholder-gray-400 focus:outline-none" onkeyup="applyFilters()"/>
-            </div>
-          </div>
-
-          <!-- New: Filter BA (Before SLA) -->
-          <div class="relative w-[48%] sm:w-auto md:w-32 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
-              <div class="pl-2 text-gray-400"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i></div>
-              <select id="filterBa" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
-                <option value="ALL">กฟภ.: ทั้งหมด</option>
-              </select>
-              <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
-            </div>
-          </div>
-          
-          <!-- Filter SLA -->
-          <div class="relative w-[48%] sm:w-auto md:w-32 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
-              <div class="pl-2 text-gray-400"><i data-lucide="clock" class="w-3.5 h-3.5"></i></div>
-              <select id="filterSelect" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
-                <option value="ALL">SLA ทั้งหมด</option>
-              </select>
-              <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
-            </div>
-          </div>
-
-          <!-- New: Filter Alert (After SLA) -->
-          <div class="relative w-full sm:w-auto md:w-32 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
-              <div class="pl-2 text-gray-400"><i data-lucide="bell" class="w-3.5 h-3.5"></i></div>
-              <select id="filterAlert" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
-                <option value="ALL">เตือน: ทั้งหมด</option>
-                <option value="ปกติ">ปกติ</option>
-                <option value="เกินกำหนด">เกินกำหนด</option>
-              </select>
-              <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
-            </div>
-          </div>
-
-          <!-- Filter Housing -->
-          <div class="relative w-[48%] sm:w-auto md:w-32 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
-              <div class="pl-2 text-gray-400"><i data-lucide="home" class="w-3.5 h-3.5"></i></div>
-              <select id="filterHousing" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
-                <option value="ALL">จัดสรร: ทั้งหมด</option>
-                <option value="บ้านจัดสรร">เฉพาะจัดสรร</option>
-                <option value="ทั่วไป">ทั่วไป (ไม่จัดสรร)</option>
-              </select>
-              <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
-            </div>
-          </div>
-
-          <!-- Filter Exception -->
-          <div class="relative w-[48%] sm:w-auto md:w-32 group">
-            <div class="relative flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm transition-all focus-within:ring-1 focus-within:ring-pea-purple focus-within:border-pea-purple">
-              <div class="pl-2 text-gray-400"><i data-lucide="shield-alert" class="w-3.5 h-3.5"></i></div>
-              <select id="filterException" class="w-full py-1.5 px-1.5 bg-transparent text-[11px] text-gray-700 font-medium focus:outline-none appearance-none cursor-pointer" onchange="applyFilters()">
-                <option value="ALL">ยกเว้น: ทั้งหมด</option>
-                <option value="ยกเว้น">เฉพาะยกเว้น</option>
-                <option value="ทั่วไป">ทั่วไป (ไม่ยกเว้น)</option>
-              </select>
-              <div class="absolute right-1 pointer-events-none text-gray-400"><i data-lucide="chevrons-up-down" class="w-3 h-3"></i></div>
-            </div>
-          </div>
-
-          <!-- ปุ่มล้างตัวกรอง (Reset Filters) เพิ่มเข้ามาใหม่ -->
-          <button onclick="resetFilters()" class="flex items-center justify-center w-full sm:w-auto px-3 py-1.5 bg-gray-100 text-gray-600 hover:text-pea-purple border border-gray-200 rounded-lg hover:bg-gray-200 text-[11px] font-semibold shadow-sm transition-all">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 mr-1"></i> ล้างตัวกรอง
-          </button>
-
         </div>
       </div>
 
@@ -749,6 +765,24 @@
 
   </main>
 
+  <!-- เพิ่มเครดิตส่วนล่างสุดของเว็บ (Footer) -->
+  <footer id="mainFooter" class="w-full px-4 sm:px-8 pb-8 hidden animate-fade-in-up">
+    <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4 border-t border-gray-200/80 pt-6 mt-4">
+      <p class="text-xs text-gray-400 font-sans tracking-wide flex items-center">
+        <i data-lucide="zap" class="w-3.5 h-3.5 mr-1.5 text-gray-300"></i>
+        Provincial Electricity Authority (PEA)
+      </p>
+      <div class="flex items-center space-x-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-2xl border border-gray-200/60 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow duration-300">
+        <span class="relative flex h-2 w-2 mr-1">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pea-purple opacity-40"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-pea-purple"></span>
+        </span>
+        <span class="text-[11px] text-gray-500 font-medium">ออกแบบและพัฒนาระบบ โดย:</span>
+        <span class="text-xs font-bold text-gray-700">นายภูวดล กล่ำทอง ผบส.กบฟ.(ก3)</span>
+      </div>
+    </div>
+  </footer>
+
   <!-- Flash Transition Element -->
   <div id="flashOverlay" class="flash-overlay"></div>
 
@@ -872,8 +906,18 @@
         loader.classList.add('hidden');
         document.getElementById('mainHeader').classList.remove('hidden', 'opacity-0', '-translate-y-full');
         document.getElementById('mainContent').classList.remove('hidden');
+        
+        // สั่งให้แสดง Footer ขึ้นมาพร้อมกัน
+        const mainFooter = document.getElementById('mainFooter');
+        if (mainFooter) mainFooter.classList.remove('hidden');
+
         flash.style.opacity = '0';
         document.getElementById('tabContainer').classList.add('animate-fade-in-up');
+        
+        // เผยโฉมแถบ Global Filters พร้อมกันกับกราฟ
+        const globalFilters = document.getElementById('globalFilters');
+        if (globalFilters) globalFilters.classList.add('animate-fade-in-up');
+
         applyFilters();
         lucide.createIcons();
       }, 600);
@@ -1055,8 +1099,8 @@
       targetView.classList.add('animate-fade-in-up', 'opacity-100', 'scale-100');
       document.getElementById(`tab-${target}`).className = "tab-btn tab-active px-6 md:px-8 py-2.5 text-sm flex items-center";
       
-      if(target === 'dashboard') renderVisuals();
-      if(target === 'data') applyFilters(); 
+      // ปรับให้เรียกใช้ตัวกรองเสมอ เพื่อให้ Dashboard และ ตาราง เปลี่ยนข้อมูลตามกัน
+      applyFilters(); 
       if(target === 'sla') lucide.createIcons();
     }
 
@@ -1285,6 +1329,7 @@
             <input type="text" 
                    value="${i.problem === '-' ? '' : i.problem}" 
                    onblur="saveProblem('${i.id}', this.value, this)"
+                   onkeydown="if(event.key === 'Enter') this.blur();"
                    placeholder="ระบุปัญหา..."
                    class="w-full min-w-[80px] px-1 py-1 text-[10px] text-gray-700 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pea-purple transition-colors">
           `;
@@ -1308,7 +1353,7 @@
               <td class="compact-cell text-center font-bold text-gray-700">${i.days}</td>
               <td class="compact-cell text-center">
                 <span class="px-1 py-0.5 inline-flex items-center text-[9px] font-bold rounded" style="background-color: ${info.color}15; color: ${info.color};">
-                  ${i.sla}
+                  ${i.sla} ด.
                 </span>
               </td>
               <td class="compact-cell text-center border-l border-gray-100 bg-gray-50/30">
@@ -1348,7 +1393,7 @@
             "ช่างคุมงาน": i.foreman, "สถานะระบบ": i.sys, "สถานะผู้ใช้": i.usr,
             "ประมาณการ (฿)": i.est, "มูลค่างานจริง (฿)": i.actual,
             "% พัสดุ": i.matPct, "% ค่าใช้จ่าย": i.costPct, "จำนวนวัน": i.days,
-            "SLA (เดือน)": i.sla,
+            "SLA (เดือน)": i.sla + " ด.",
             "แจ้งเตือน": i.isOverdue === 1 ? `เกิน ${i.sla} เดือน` : 'ปกติ',
             "ปัญหาและอุปสรรค": i.problem === '-' ? '' : i.problem
         }));
@@ -1379,7 +1424,7 @@
                 <td>${i.matPct}</td>
                 <td>${i.costPct}</td>
                 <td>${i.days}</td>
-                <td>${i.sla}</td>
+                <td>${i.sla} ด.</td>
                 <td>${alertText}</td>
                 <td style="text-align: left; color: #741b47;">${i.problem === '-' ? '' : i.problem}</td>
             </tr>
@@ -1438,7 +1483,7 @@
 
     // ================= DASHBOARD =================
     function renderVisuals() {
-      filteredData = globalData;
+      // เอาคำสั่งที่บังคับใช้ข้อมูลทั้งหมดออก เพื่อให้ Dashboard ใช้ข้อมูลที่ถูกกรอง (filteredData)
       
       const canvas1 = document.getElementById('slaBarChart');
       const canvas2 = document.getElementById('slaPieChart');
