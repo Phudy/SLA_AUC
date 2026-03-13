@@ -231,7 +231,7 @@
       <i data-lucide="zap" class="w-8 h-8 text-pea-purple"></i>
     </div>
     <div class="overflow-hidden">
-      <h2 class="text-5xl font-display font-light tracking-[0.15em] text-gray-800 mb-2 transform translate-y-0 transition-transform duration-1000" id="introLogo">PEA<span class="font-bold text-pea-purple">.</span>SLA</h2>
+      <h2 class="text-5xl font-display font-light tracking-[0.15em] text-gray-800 mb-2 transform translate-y-0 transition-transform duration-1000" id="introLogo">PEA C3 <span class="font-bold text-pea-purple">AUC</span></h2>
     </div>
     <div class="h-6 overflow-hidden mt-4">
       <p id="loadingStatus" class="text-gray-400 tracking-widest text-xs uppercase font-medium transform translate-y-0 transition-transform duration-700">กำลังดึงข้อมูลจากระบบ...</p>
@@ -243,7 +243,7 @@
 
   <!-- ================= STEALTH NAV BAR ================= -->
   <header class="aero-nav sticky top-0 z-40 transition-all duration-500 opacity-0 -translate-y-full hidden" id="mainHeader">
-    <div class="w-full max-w-[1600px] mx-auto px-4 sm:px-8 py-4">
+    <div class="w-full px-4 sm:px-8 py-4">
       <div class="flex justify-between items-center">
         <!-- Logo Area -->
         <div class="flex items-center space-x-4">
@@ -264,22 +264,13 @@
             <span class="w-2 h-2 rounded-full bg-red-500 mr-2 animate-pulse"></span>
             แสดงข้อมูลจำลอง (Mock Data)
           </div>
-          <div class="hidden sm:flex items-center space-x-3 text-right">
-            <div class="flex flex-col text-left">
-              <span class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">อัปเดตล่าสุด</span>
-              <span class="text-xs font-bold text-gray-700" id="lastUpdateTime">--:--</span>
-            </div>
-            <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100 text-emerald-500">
-              <i data-lucide="check" class="w-4 h-4"></i>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   </header>
 
   <!-- ================= MAIN CONTENT ================= -->
-  <main id="mainContent" class="w-full max-w-[1600px] mx-auto px-4 sm:px-8 py-8 hidden flex-grow relative">
+  <main id="mainContent" class="w-full px-4 sm:px-8 py-8 hidden flex-grow relative">
     
     <!-- Segmented Controls -->
     <div class="flex justify-center md:justify-start mb-10 opacity-0" id="tabContainer">
@@ -529,7 +520,10 @@
         <div class="text-sm font-medium text-pea-purple">
           <i data-lucide="check-square" class="w-4 h-4 inline mr-1"></i> เลือกไว้ <span id="selectedCount">0</span> รายการ
         </div>
-        <button onclick="clearSelection()" class="text-xs font-semibold text-pea-purple hover:underline">ยกเลิกการเลือก</button>
+        <div class="flex items-center gap-4">
+          <span class="text-xs text-gray-600">⚠️ คอลัมน์ "ปัญหาและอุปสรรค" จะบันทึกผ่านระบบ Apps Script อัตโนมัติเมื่อพิมพ์เสร็จ</span>
+          <button onclick="clearSelection()" class="text-xs font-semibold text-pea-purple hover:underline">ยกเลิกการเลือก</button>
+        </div>
       </div>
 
       <div class="aero-glass rounded-[2rem] overflow-hidden shadow-soft flex flex-col">
@@ -538,76 +532,79 @@
             <thead class="sticky top-0 z-20">
               <tr class="bg-white/90 backdrop-blur-xl border-b border-gray-200 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
                 <!-- Select All Checkbox -->
-                <th scope="col" class="px-4 py-4 text-center border-r border-gray-100">
+                <th scope="col" class="px-2 py-3 text-center border-r border-gray-100">
                   <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAllPage()" class="custom-checkbox rounded border-gray-300">
                 </th>
-                <th scope="col" class="px-5 py-4 sortable" onclick="handleSort('ba')">
+                <th scope="col" class="px-3 py-3 sortable" onclick="handleSort('ba')">
                   <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
                     การไฟฟ้า <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-ba"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-4 sortable" onclick="handleSort('year')">
+                <th scope="col" class="px-2 py-3 sortable" onclick="handleSort('year')">
                   <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
                     ปี <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-year"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-4 sortable" onclick="handleSort('id')">
+                <th scope="col" class="px-3 py-3 sortable" onclick="handleSort('id')">
                   <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
                     หมายเลขงาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-id"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-5 py-4 sortable min-w-[200px]" onclick="handleSort('subj')">
+                <th scope="col" class="px-3 py-3 sortable min-w-[180px]" onclick="handleSort('subj')">
                   <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
                     ชื่องาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-subj"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-4 sortable min-w-[120px]" onclick="handleSort('foreman')">
+                <th scope="col" class="px-3 py-3 sortable min-w-[100px]" onclick="handleSort('foreman')">
                   <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
                     ช่างคุมงาน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-foreman"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-4 sortable" onclick="handleSort('sys')">
+                <th scope="col" class="px-2 py-3 sortable" onclick="handleSort('sys')">
                   <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
                     สถานะ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-sys"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-4 sortable min-w-[120px]" onclick="handleSort('usr')">
+                <th scope="col" class="px-3 py-3 sortable min-w-[100px]" onclick="handleSort('usr')">
                   <div class="flex items-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
                     สถานะผู้ใช้ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-usr"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-4 sortable" onclick="handleSort('est')">
+                <th scope="col" class="px-3 py-3 sortable" onclick="handleSort('est')">
                   <div class="flex items-center justify-end font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
                     ประมาณการ (฿) <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-est"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-4 sortable" onclick="handleSort('actual')">
+                <th scope="col" class="px-3 py-3 sortable" onclick="handleSort('actual')">
                   <div class="flex items-center justify-end font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
                     มูลค่างาน (฿) <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-actual"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-4 sortable" onclick="handleSort('matPct')">
+                <th scope="col" class="px-2 py-3 sortable" onclick="handleSort('matPct')">
                   <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
                     %พัสดุ <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-matPct"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-4 sortable" onclick="handleSort('costPct')">
+                <th scope="col" class="px-2 py-3 sortable" onclick="handleSort('costPct')">
                   <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
                     %คชจ. <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-costPct"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-4 py-4 sortable" onclick="handleSort('days')">
+                <th scope="col" class="px-3 py-3 sortable" onclick="handleSort('days')">
                   <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors whitespace-nowrap">
                     จำนวนวัน <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-days"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-3 py-4 sortable" onclick="handleSort('sla')">
+                <th scope="col" class="px-2 py-3 sortable" onclick="handleSort('sla')">
                   <div class="flex items-center justify-center font-bold text-gray-500 uppercase tracking-wide text-[11px] hover:text-pea-purple transition-colors">
                     SLA <i data-lucide="arrow-up-down" class="w-3 h-3 ml-1 opacity-40 sort-icon" id="sort-icon-sla"></i>
                   </div>
                 </th>
-                <th scope="col" class="px-5 py-4 font-bold text-gray-500 uppercase tracking-wide text-[11px] text-center border-l border-gray-200 bg-gray-50/50">
+                <th scope="col" class="px-3 py-3 font-bold text-gray-500 uppercase tracking-wide text-[11px] text-center border-l border-gray-200 bg-gray-50/50">
                   แจ้งเตือน
+                </th>
+                <th scope="col" class="px-5 py-3 font-bold text-pea-purple uppercase tracking-wide text-[11px] text-center border-l border-gray-200 bg-pea-purple/5 min-w-[200px]">
+                  ปัญหาและอุปสรรค (บันทึกอัตโนมัติ)
                 </th>
               </tr>
             </thead>
@@ -714,18 +711,12 @@
   <script>
     // ================= CONFIGURATION =================
     // ใช้ Sheet ID ตัวใหม่
-    const SHEET_ID = '1bIaK5yHfm3owGnjVlzujg-6LivHWJPDj';
+    const SHEET_ID = '1ft3cEGHEf6NQmxO9QrEhYQlg1dPm0DGkHgLacF0pAbI';
     // เพิ่ม &sheet=Data เพื่อเจาะจงชื่อ Sheet
     const SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Data`;
 
-    // Constants
-    const STATUS_COLORS = {
-      'CRTD': 'bg-gray-100 text-gray-600',
-      'REL':  'bg-blue-50 text-blue-600 ring-1 ring-blue-200/50',
-      'TECO': 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/50',
-      'CLSD': 'bg-green-100 text-green-700 font-medium ring-1 ring-green-300/50',
-      'DEFAULT': 'bg-gray-50 text-gray-500'
-    };
+    // 🟢 นำ URL ของ Google Apps Script มาใส่ตรงนี้เพื่อให้ระบบบันทึกปัญหาได้
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzc_eAnKNEykyV_XQkUJteLTpc1AcdOSRTWi7ySZGuNQJfgVx2B4jQuUQk7hEEP7gS6/exec'; 
 
     const SLA_PERIODS = [
       { value: 6, label: '6 เดือน (< 0.5M)', color: '#10b981' }, 
@@ -737,21 +728,17 @@
       { value: 24, label: '24 เดือน (> 100M)', color: '#ef4444' }  
     ];
 
-    // State Variables
     let globalData = [];
     let filteredData = [];
     let charts = {};
     
-    // Pagination & Sorting State
     let currentPage = 1;
     const rowsPerPage = 20;
     let sortCol = null;
     let sortAsc = true;
     
-    // Selection State
     let selectedRows = new Set();
 
-    // Init Dropdown
     const filterSelect = document.getElementById('filterSelect');
     SLA_PERIODS.forEach(period => {
       const opt = document.createElement('option');
@@ -760,7 +747,6 @@
       filterSelect.appendChild(opt);
     });
 
-    // Chart.js Config
     Chart.defaults.font.family = "'Outfit', 'Prompt', sans-serif";
     Chart.defaults.color = '#94a3b8'; 
     Chart.defaults.scale.grid.color = '#f1f5f9';
@@ -806,10 +792,6 @@
       }
       const p = [6, 9, 12, 15, 18, 21, 24];
       return p.reduce((prev, curr) => Math.abs(curr - num) < Math.abs(prev - num) ? curr : prev);
-    };
-
-    const updateClock = () => {
-      document.getElementById('lastUpdateTime').innerText = new Date().toLocaleTimeString('th-TH', {hour12:false}) + ' น.';
     };
 
     function animateCounter(id, end) {
@@ -868,30 +850,75 @@
       try {
         if (res.status === 'error') throw new Error(res.errors[0].message);
         
-        globalData = res.table.rows.map((r, i) => {
-          // ดึงค่า Estimate (Col J = Index 9) เพื่อใช้คิด SLA
-          const estValue = safeNum(r.c[9]);
-          const slaPeriod = determineSla(estValue);
+        let headers = [];
+        let dataStartIndex = 0;
+        
+        if (res.table.cols.some(c => c.label)) {
+            headers = res.table.cols.map(c => c.label ? String(c.label).trim() : '');
+        } else if (res.table.rows.length > 0) {
+            headers = res.table.rows[0].c.map(cell => cell && cell.v ? String(cell.v).trim() : '');
+            dataStartIndex = 1;
+        }
 
-          return {
-            idx: i, 
-            ba: safeStr(r.c[1]),            // Col B : การไฟฟ้า
-            year: safeStr(r.c[2]),          // Col C : ปี
-            id: safeStr(r.c[3]),            // Col D : หมายเลขงาน
-            subj: safeStr(r.c[4]),          // Col E : ชื่องาน
-            sys: safeStr(r.c[5]),           // Col F : สถานะระบบ
-            usr: safeStr(r.c[6]),           // Col G : สถานะผู้ใช้
-            actual: safeNum(r.c[7]),        // Col H : มูลค่างาน
-            est: estValue,                  // Col J : มูลค่าประมาณการ
-            matPct: safePct(r.c[10]),       // Col K : %พัสดุ
-            costPct: safePct(r.c[11]),      // Col L : %คชจ.
-            housingType: safeStr(r.c[12]),  // Col M : งานบ้านและที่ดินจัดสรร
-            foreman: safeStr(r.c[13]),      // Col N : ช่างคุมงาน
-            exceptionType: safeStr(r.c[16]),// Col Q : งานยกเว้น
-            days: safeNum(r.c[23]),         // Col X : จำนวนวันค่าใช้จ่ายเข้าครั้งแรก
-            sla: slaPeriod                  // คำนวณ SLA จาก est
-          };
-        }).filter(item => item.id !== '-' && item.id !== '' && item.ba !== '-');
+        const findCol = (keywords, fallbackIdx) => {
+            const idx = headers.findIndex(h => keywords.some(kw => h.includes(kw)));
+            return idx !== -1 ? idx : fallbackIdx;
+        };
+        const findColExact = (exactName, fallbackIdx) => {
+            const idx = headers.findIndex(h => h === exactName);
+            return idx !== -1 ? idx : fallbackIdx;
+        }
+
+        const idxBa = findCol(['กฟฟ'], 1);
+        const idxYear = findCol(['ปี'], 2);
+        const idxId = findCol(['WBS', 'รหัสเดิม', 'PEA NO'], 3);
+        const idxSubj = findCol(['คำอธิบาย', 'ชื่องาน'], 4);
+        const idxSys = findCol(['ระ'], 5); 
+        const idxUsr = findCol(['สถานะผู้ใช้'], 6);
+        const idxActual = findCol(['คงเหลือ', 'มูลค่างาน'], 6); 
+        const idxEst = findColExact('ประมาณการ', 8); 
+        const idxMatPct = findCol(['%พัสดุ'], 9); 
+        const idxCostPct = findCol(['%คชจ'], 10); 
+        const idxHousing = findCol(['ประเภทงาน', 'จัดสรร'], 11); 
+        const idxForeman = findCol(['ช่างคุมงาน'], 13);
+        const idxException = findCol(['ยกเว้น'], 16);
+        const idxDays = findCol(['จำนวนวัน'], 23);
+        const idxProblem = findCol(['ปัญหา', 'อุปสรรค'], 24);
+
+        globalData = [];
+        for (let i = dataStartIndex; i < res.table.rows.length; i++) {
+            const r = res.table.rows[i];
+            if (!r || !r.c) continue;
+            
+            const idVal = r.c[idxId];
+            if (!idVal || !idVal.v || String(idVal.v) === '-') continue;
+
+            const estValue = safeNum(r.c[idxEst]);
+            const slaPeriod = determineSla(estValue);
+            
+            const rawSys = safeStr(r.c[idxSys]);
+            const cleanSys = rawSys !== '-' ? rawSys.trim().split(' ')[0].toUpperCase() : '-';
+
+            globalData.push({
+                idx: i, 
+                ba: safeStr(r.c[idxBa]),            
+                year: safeStr(r.c[idxYear]),          
+                id: safeStr(r.c[idxId]),            
+                subj: safeStr(r.c[idxSubj]),          
+                sys: cleanSys,           
+                usr: safeStr(r.c[idxUsr]),           
+                actual: safeNum(r.c[idxActual]),        
+                est: estValue,                  
+                matPct: safePct(r.c[idxMatPct]),       
+                costPct: safePct(r.c[idxCostPct]),      
+                housingType: safeStr(r.c[idxHousing]),  
+                foreman: safeStr(r.c[idxForeman]),      
+                exceptionType: safeStr(r.c[idxException]),
+                days: safeNum(r.c[idxDays]),         
+                problem: safeStr(r.c[idxProblem]),      
+                sla: slaPeriod                  
+            });
+        }
 
         if(!globalData.length) throw new Error("Empty Data");
       } catch (err) {
@@ -900,7 +927,6 @@
         document.getElementById('mockDataAlert').classList.add('flex');
         buildSimData();
       }
-      updateClock();
       isDataLoaded = true; 
     };
 
@@ -909,7 +935,7 @@
         const slaOptions = [6, 9, 12, 15, 18, 21, 24];
         let s = slaOptions[Math.floor(Math.random() * slaOptions.length)];
         const sys = ['CRTD', 'REL', 'TECO', 'CLSD', 'CNFN'][Math.floor(Math.random() * 5)];
-        const daysPassed = Math.floor(Math.random() * 800); // สุ่มวัน
+        const daysPassed = Math.floor(Math.random() * 800); 
         
         return {
           idx: i, 
@@ -927,6 +953,7 @@
           foreman: 'ช่างทดสอบ',
           exceptionType: Math.random() > 0.9 ? 'งานยกเว้น' : '',
           days: daysPassed.toString(),
+          problem: '',
           sla: s
         };
       });
@@ -941,7 +968,6 @@
         document.getElementById('mockDataAlert').classList.remove('hidden');
         document.getElementById('mockDataAlert').classList.add('flex');
         buildSimData();
-        updateClock();
         isDataLoaded = true;
       };
       document.body.appendChild(s);
@@ -963,20 +989,57 @@
       document.getElementById(`tab-${target}`).className = "tab-btn tab-active px-6 md:px-8 py-2.5 text-sm flex items-center";
       
       if(target === 'dashboard') renderVisuals();
-      if(target === 'data') {
-          applyFilters(); 
-      }
+      if(target === 'data') applyFilters(); 
       if(target === 'sla') lucide.createIcons();
     }
 
-    // ================= TABLE RENDERING, SORTING, PAGINATION, SELECTION =================
-    
-    function toggleSelection(id) {
-        if (selectedRows.has(id)) {
-            selectedRows.delete(id);
-        } else {
-            selectedRows.add(id);
+    // ================= DATA SAVING LOGIC =================
+    async function saveProblem(jobId, problemText, inputElement) {
+        if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'ใส่_URL_ของ_APPS_SCRIPT_ที่นี่') {
+             alert('กรุณาระบุ URL ของ Google Apps Script ในซอร์สโค้ดก่อนใช้งานระบบบันทึกครับ');
+             return;
         }
+
+        const originalBg = inputElement.style.backgroundColor;
+        inputElement.style.backgroundColor = '#fef08a'; // เปลี่ยนเป็นสีเหลือง ตอนกำลังบันทึก
+        inputElement.disabled = true;
+
+        try {
+            // ใช้ x-www-form-urlencoded เลี่ยงปัญหาการบล็อก CORS ของเบราว์เซอร์
+            const formData = new URLSearchParams();
+            formData.append('id', jobId);
+            formData.append('problem', problemText);
+
+            await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData
+            });
+            
+            // เมื่อไม่ Error ให้ถือว่ายิงข้อมูลไปสำเร็จ
+            inputElement.style.backgroundColor = '#dcfce3'; // สีเขียวเมื่อสำเร็จ
+            setTimeout(() => inputElement.style.backgroundColor = originalBg, 2000);
+            
+            // อัปเดตข้อมูลในหน่วยความจำ
+            const targetRow = globalData.find(d => d.id === jobId);
+            if (targetRow) targetRow.problem = problemText;
+            
+        } catch (error) {
+            console.error("Save Error:", error);
+            inputElement.style.backgroundColor = '#fee2e2'; // สีแดงเมื่อล้มเหลว
+            alert('บันทึกข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+        } finally {
+            inputElement.disabled = false;
+        }
+    }
+
+    // ================= TABLE RENDERING & FILTERS =================
+    function toggleSelection(id) {
+        if (selectedRows.has(id)) selectedRows.delete(id);
+        else selectedRows.add(id);
         updateSelectionUI();
     }
 
@@ -986,11 +1049,8 @@
         const endIdx = Math.min(startIdx + rowsPerPage, filteredData.length);
         const paginatedData = filteredData.slice(startIdx, endIdx);
 
-        if (isChecked) {
-            paginatedData.forEach(d => selectedRows.add(d.id));
-        } else {
-            paginatedData.forEach(d => selectedRows.delete(d.id));
-        }
+        if (isChecked) paginatedData.forEach(d => selectedRows.add(d.id));
+        else paginatedData.forEach(d => selectedRows.delete(d.id));
         updateSelectionUI();
     }
 
@@ -1008,7 +1068,7 @@
         } else {
             indicator.classList.add('hidden');
         }
-        renderMatrix(); // re-render to update checkbox visuals
+        renderMatrix(); 
     }
 
     function applyFilters() {
@@ -1020,23 +1080,16 @@
       const activeTabIsData = document.getElementById('view-data') && !document.getElementById('view-data').classList.contains('hidden');
 
       filteredData = globalData.filter(i => {
-        // 1. Text Search
         const mq = i.id.toLowerCase().includes(q) || i.ba.toLowerCase().includes(q) || (i.subj && i.subj.toLowerCase().includes(q));
-        
-        // 2. SLA Filter
         const ms = s === 'ALL' || i.sla === parseInt(s);
-        
-        // 3. Housing Filter
         let mHousing = true;
         if (fHousing === 'บ้านจัดสรร') mHousing = i.housingType.includes('บ้านและที่ดินจัดสรร');
         else if (fHousing === 'ทั่วไป') mHousing = !i.housingType.includes('บ้านและที่ดินจัดสรร');
 
-        // 4. Exception Filter
         let mException = true;
         if (fException === 'ยกเว้น') mException = i.exceptionType.includes('ยกเว้น');
         else if (fException === 'ทั่วไป') mException = !i.exceptionType.includes('ยกเว้น');
         
-        // 5. Pending Status Filter (เฉพาะหน้าตารางข้อมูล ไม่เอา CLSD)
         let isPending = true;
         if (activeTabIsData) {
             isPending = i.sys.toUpperCase() !== 'CLSD';
@@ -1046,7 +1099,7 @@
       });
       
       currentPage = 1; 
-      selectedRows.clear(); // Clear selection when filter changes for safety
+      selectedRows.clear(); 
       updateSelectionUI();
       
       const dashView = document.getElementById('view-dashboard');
@@ -1054,17 +1107,11 @@
     }
 
     function handleSort(col) {
-        if (sortCol === col) {
-            sortAsc = !sortAsc;
-        } else {
-            sortCol = col;
-            sortAsc = true;
-        }
+        if (sortCol === col) sortAsc = !sortAsc;
+        else { sortCol = col; sortAsc = true; }
         
         filteredData.sort((a, b) => {
-            let valA = a[col];
-            let valB = b[col];
-            
+            let valA = a[col]; let valB = b[col];
             if (col === 'est' || col === 'actual' || col === 'matPct' || col === 'costPct' || col === 'days') {
                 valA = parseFloat(String(valA).replace(/,/g, '').replace('%', '')) || 0;
                 valB = parseFloat(String(valB).replace(/,/g, '').replace('%', '')) || 0;
@@ -1075,12 +1122,10 @@
                 valA = String(valA).toLowerCase();
                 valB = String(valB).toLowerCase();
             }
-
             if (valA < valB) return sortAsc ? -1 : 1;
             if (valA > valB) return sortAsc ? 1 : -1;
             return 0;
         });
-        
         currentPage = 1;
         renderMatrix();
     }
@@ -1118,13 +1163,12 @@
       const endIdx = Math.min(startIdx + rowsPerPage, totalRows);
       const paginatedData = filteredData.slice(startIdx, endIdx);
 
-      // Check if all rows in current page are selected
       const allSelectedOnPage = paginatedData.length > 0 && paginatedData.every(d => selectedRows.has(d.id));
       const selectAllCheckbox = document.getElementById('selectAllCheckbox');
       if (selectAllCheckbox) selectAllCheckbox.checked = allSelectedOnPage;
       
       if (totalRows === 0) {
-        tbody.innerHTML = `<tr><td colSpan="15" class="px-6 py-24 text-center"><div class="flex flex-col items-center justify-center text-gray-400"><i data-lucide="scan-line" class="w-10 h-10 mb-4 opacity-30"></i><p class="text-sm font-medium tracking-wide">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</p></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colSpan="16" class="px-6 py-24 text-center"><div class="flex flex-col items-center justify-center text-gray-400"><i data-lucide="scan-line" class="w-10 h-10 mb-4 opacity-30"></i><p class="text-sm font-medium tracking-wide">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</p></div></td></tr>`;
       } else {
         let html = '';
         paginatedData.forEach(i => {
@@ -1150,30 +1194,42 @@
               }
           }
 
+          // HTML ของ Input ปัญหาและอุปสรรค 
+          const problemInputHtml = `
+            <input type="text" 
+                   value="${i.problem === '-' ? '' : i.problem}" 
+                   onblur="saveProblem('${i.id}', this.value, this)"
+                   placeholder="ระบุปัญหา..."
+                   class="w-full px-2 py-1.5 text-xs text-gray-700 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pea-purple transition-colors">
+          `;
+
           html += `
             <tr class="table-row-premium transition-colors ${rowClass}">
-              <td class="px-4 py-4 whitespace-nowrap text-center border-r border-gray-100">
+              <td class="px-2 py-3 whitespace-nowrap text-center border-r border-gray-100">
                 <input type="checkbox" class="custom-checkbox rounded border-gray-300" ${isSelected ? 'checked' : ''} onclick="toggleSelection('${i.id}')">
               </td>
-              <td class="px-5 py-4 whitespace-nowrap font-display text-[12px] text-gray-500">${i.ba}</td>
-              <td class="px-3 py-4 whitespace-nowrap text-center font-display text-[12px] text-gray-500">${i.year}</td>
-              <td class="px-4 py-4 whitespace-nowrap font-display font-bold text-gray-800 tracking-wide text-xs">${i.id}</td>
-              <td class="px-5 py-4 min-w-[200px] leading-snug text-gray-700 font-medium text-[13px]">${i.subj}</td>
-              <td class="px-4 py-4 min-w-[120px] text-gray-600 font-medium text-xs leading-snug">${i.foreman}</td>
-              <td class="px-3 py-4 whitespace-nowrap text-[11px] font-bold text-gray-700">${i.sys}</td>
-              <td class="px-4 py-4 min-w-[120px] text-[11px] text-gray-500 leading-snug">${i.usr}</td>
-              <td class="px-4 py-4 whitespace-nowrap text-right font-display text-[12px] text-gray-700">${i.est}</td>
-              <td class="px-4 py-4 whitespace-nowrap text-right font-display text-[12px] text-gray-700">${i.actual}</td>
-              <td class="px-3 py-4 whitespace-nowrap text-center font-display text-[12px] ${matClass}">${i.matPct}</td>
-              <td class="px-3 py-4 whitespace-nowrap text-center font-display text-[12px] ${costClass}">${i.costPct}</td>
-              <td class="px-4 py-4 whitespace-nowrap text-center font-display text-[12px] font-bold text-gray-700">${i.days}</td>
-              <td class="px-3 py-4 whitespace-nowrap text-center">
-                <span class="px-2 py-0.5 inline-flex items-center text-[11px] font-bold rounded" style="background-color: ${info.color}15; color: ${info.color};">
+              <td class="px-3 py-3 whitespace-nowrap font-display text-[11px] text-gray-500">${i.ba}</td>
+              <td class="px-2 py-3 whitespace-nowrap text-center font-display text-[11px] text-gray-500">${i.year}</td>
+              <td class="px-3 py-3 whitespace-nowrap font-display font-bold text-gray-800 tracking-wide text-[11px]">${i.id}</td>
+              <td class="px-3 py-3 min-w-[180px] leading-snug text-gray-700 font-medium text-[12px]">${i.subj}</td>
+              <td class="px-3 py-3 min-w-[100px] text-gray-600 font-medium text-[11px] leading-snug">${i.foreman}</td>
+              <td class="px-2 py-3 whitespace-nowrap text-[11px] font-bold text-gray-700">${i.sys}</td>
+              <td class="px-3 py-3 min-w-[100px] text-[11px] text-gray-500 leading-snug">${i.usr}</td>
+              <td class="px-3 py-3 whitespace-nowrap text-right font-display text-[11px] text-gray-700">${i.est}</td>
+              <td class="px-3 py-3 whitespace-nowrap text-right font-display text-[11px] text-gray-700">${i.actual}</td>
+              <td class="px-2 py-3 whitespace-nowrap text-center font-display text-[11px] ${matClass}">${i.matPct}</td>
+              <td class="px-2 py-3 whitespace-nowrap text-center font-display text-[11px] ${costClass}">${i.costPct}</td>
+              <td class="px-3 py-3 whitespace-nowrap text-center font-display text-[11px] font-bold text-gray-700">${i.days}</td>
+              <td class="px-2 py-3 whitespace-nowrap text-center">
+                <span class="px-1.5 py-0.5 inline-flex items-center text-[10px] font-bold rounded" style="background-color: ${info.color}15; color: ${info.color};">
                   ${i.sla} ด.
                 </span>
               </td>
-              <td class="px-5 py-4 whitespace-nowrap text-center border-l border-gray-100 bg-gray-50/30">
+              <td class="px-3 py-3 whitespace-nowrap text-center border-l border-gray-100 bg-gray-50/30">
                 ${alertHtml}
+              </td>
+              <td class="px-3 py-3 border-l border-gray-100 bg-pea-purple/5">
+                ${problemInputHtml}
               </td>
             </tr>
           `;
@@ -1192,13 +1248,8 @@
       lucide.createIcons();
     }
 
-    // ================= EXPORT & PRINT FUNCTIONS =================
-    
     function getExportData() {
-        // หากมีการเลือก Checkbox ให้ดึงเฉพาะข้อมูลที่เลือก หากไม่เลือกเลยให้ดึงข้อมูลทั้งหมดที่ถูกกรองอยู่
-        if (selectedRows.size > 0) {
-            return filteredData.filter(d => selectedRows.has(d.id));
-        }
+        if (selectedRows.size > 0) return filteredData.filter(d => selectedRows.has(d.id));
         return filteredData;
     }
 
@@ -1207,19 +1258,12 @@
         if (dataToExport.length === 0) { alert("ไม่มีข้อมูลสำหรับส่งออก"); return; }
         
         const exportData = dataToExport.map(i => ({
-            "การไฟฟ้า": i.ba, 
-            "ปี": i.year,
-            "หมายเลขงาน": i.id, 
-            "ชื่องาน": i.subj,
-            "ช่างคุมงาน": i.foreman,
-            "สถานะระบบ": i.sys, 
-            "สถานะผู้ใช้": i.usr,
-            "มูลค่าประมาณการ (฿)": i.est, 
-            "มูลค่างานจริง (฿)": i.actual,
-            "% พัสดุ": i.matPct, 
-            "% ค่าใช้จ่าย": i.costPct,
-            "จำนวนวัน": i.days,
-            "SLA (เดือน)": i.sla
+            "การไฟฟ้า": i.ba, "ปี": i.year, "หมายเลขงาน": i.id, "ชื่องาน": i.subj,
+            "ช่างคุมงาน": i.foreman, "สถานะระบบ": i.sys, "สถานะผู้ใช้": i.usr,
+            "มูลค่าประมาณการ (฿)": i.est, "มูลค่างานจริง (฿)": i.actual,
+            "% พัสดุ": i.matPct, "% ค่าใช้จ่าย": i.costPct, "จำนวนวัน": i.days,
+            "SLA (เดือน)": i.sla,
+            "ปัญหาและอุปสรรค": i.problem === '-' ? '' : i.problem
         }));
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
@@ -1237,15 +1281,13 @@
                 <td style="border: 1px solid #ddd; padding: 4px;">${i.ba}</td>
                 <td style="border: 1px solid #ddd; padding: 4px; font-weight: bold;">${i.id}</td>
                 <td style="border: 1px solid #ddd; padding: 4px;">${i.subj}</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.sys}</td>
                 <td style="border: 1px solid #ddd; padding: 4px; text-align: right;">${i.est}</td>
                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.costPct}</td>
                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.days}</td>
                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">${i.sla}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: left; color: #741b47;">${i.problem === '-' ? '' : i.problem}</td>
             </tr>
         `).join('');
-
-        const reportTitle = isPdf ? "บันทึกรายงาน PDF" : "พิมพ์รายงาน";
 
         printWindow.document.write(`
             <html>
@@ -1274,8 +1316,9 @@
                     <thead>
                         <tr>
                             <th>กฟภ.</th><th>หมายเลขงาน</th><th style="text-align: left;">ชื่องาน</th>
-                            <th>ระบบ</th><th style="text-align: right;">ประมาณการ (฿)</th>
+                            <th style="text-align: right;">ประมาณการ (฿)</th>
                             <th>% คชจ.</th><th>จำนวนวัน</th><th>SLA (เดือน)</th>
+                            <th style="text-align: left; width: 25%;">ปัญหาและอุปสรรค</th>
                         </tr>
                     </thead>
                     <tbody>${htmlTableRows}</tbody>
@@ -1284,7 +1327,6 @@
                     window.onload = function() { 
                         setTimeout(() => { 
                             window.print(); 
-                            // ปิดหน้าต่างอัตโนมัติหลังจากสั่งพิมพ์เสร็จ
                             window.close(); 
                         }, 500); 
                     };
@@ -1295,13 +1337,10 @@
         printWindow.document.close();
     }
 
-    function exportPDF() {
-        printTable(true);
-    }
+    function exportPDF() { printTable(true); }
 
     // ================= DASHBOARD =================
     function renderVisuals() {
-      // หน้า Dashboard ให้แสดงข้อมูลทั้งหมด เพื่อภาพรวมขององค์กร
       filteredData = globalData;
       
       const canvas1 = document.getElementById('slaBarChart');
@@ -1334,7 +1373,6 @@
         return grad;
       }
 
-      // 1. SLA Bar Chart
       const c1 = canvas1.getContext('2d');
       const s1 = SLA_PERIODS.map(p => ({ l: `${p.value} เดือน`, c: filteredData.filter(d=>d.sla===p.value).length, col: p.color }));
       charts.slaBar = new Chart(c1, {
@@ -1342,7 +1380,6 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, border:{display:false} }, x: { grid: { display: false }, border:{display:false} } }, animation: { duration: 2000, easing: 'easeOutQuart' } }
       });
 
-      // 2. SLA Pie Chart
       const c2 = canvas2.getContext('2d');
       const pData = s1.filter(s => s.c > 0);
       charts.slaPie = new Chart(c2, {
@@ -1363,7 +1400,6 @@
         }).join('');
       }
 
-      // 3. Status Bar Chart
       const c3 = canvas3.getContext('2d');
       const sc = {}; filteredData.forEach(d => { sc[d.sys] = (sc[d.sys] || 0) + 1; });
       const sa = Object.keys(sc).map(k => ({ n: k, c: sc[k] })).sort((a,b) => b.c - a.c);
@@ -1373,7 +1409,6 @@
         options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, border:{display:false} }, y: { grid: { display: false }, border:{display:false} } }, animation: { duration: 2000, easing: 'easeOutQuart' } }
       });
 
-      // 4. BA SLA Stacked Chart
       const c4 = canvas4.getContext('2d');
       const gba = {}; filteredData.forEach(d => { const b = d.ba; if (!gba[b]) { gba[b] = { n: b, t: 0 }; SLA_PERIODS.forEach(p => gba[b][p.value] = 0); } gba[b][d.sla] += 1; gba[b].t += 1; });
       const bArr = Object.values(gba).sort((a,b) => b.t - a.t).slice(0, 15);
@@ -1383,18 +1418,14 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 6, padding: 20 } }, tooltip: { mode: 'index', intersect: false } }, scales: { x: { stacked: true, grid: { display: false }, border:{display:false} }, y: { stacked: true, beginAtZero: true, border:{display:false} } }, animation: { duration: 2000, easing: 'easeOutQuart' } }
       });
 
-      // 5. NEW: Overdue Projects Chart
       const cOverdue = canvasOverdue.getContext('2d');
       const overdueCounts = {};
       SLA_PERIODS.forEach(p => overdueCounts[p.value] = 0);
 
       filteredData.forEach(d => {
          const parsedDays = parseInt(String(d.days).replace(/,/g, ''));
-         // ถ้างบยังไม่ถูกปิด (ไม่ใช่ CLSD) และจำนวนวันเกิน SLA กำหนด
          if (d.sys.toUpperCase() !== 'CLSD' && !isNaN(parsedDays) && parsedDays > (d.sla * 30)) {
-             if (overdueCounts[d.sla] !== undefined) {
-                 overdueCounts[d.sla]++;
-             }
+             if (overdueCounts[d.sla] !== undefined) overdueCounts[d.sla]++;
          }
       });
 
@@ -1402,8 +1433,8 @@
       const overdueData = SLA_PERIODS.map(p => overdueCounts[p.value]);
       
       const gradOverdue = cOverdue.createLinearGradient(0, 0, 600, 0); 
-      gradOverdue.addColorStop(0, 'rgba(239, 68, 68, 0.2)'); // Red light
-      gradOverdue.addColorStop(1, 'rgba(220, 38, 38, 0.8)'); // Red dark
+      gradOverdue.addColorStop(0, 'rgba(239, 68, 68, 0.2)'); 
+      gradOverdue.addColorStop(1, 'rgba(220, 38, 38, 0.8)'); 
 
       charts.overdue = new Chart(cOverdue, {
         type: 'bar', 
